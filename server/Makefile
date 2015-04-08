@@ -1,15 +1,11 @@
 #	$Id: Makefile,v 1.4 2014/10/22 06:14:05 kimt21 Exp $
 
-# CS 352  --  Mini Shell!
-#
 #   Timothy Kim
 #   Modified October 21, 2014
-#   CSCI 352
-#   Assignment 3
-#
+#   VROOM -  Server
 #
 #   A Makefile that compiles all the necessary sources
-#   in order to build properly running msh
+#   in order to build properly running server
 #   compiles on 'make' and removes on 'clean'
 #
 
