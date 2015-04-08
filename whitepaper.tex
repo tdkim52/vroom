@@ -1,0 +1,106 @@
+\documentclass[11pt]{article}
+\usepackage{graphicx}
+\graphicspath{}
+\usepackage{fullpage}
+\usepackage{fancyhdr}
+\usepackage{multicol}
+
+
+\cfoot{\thepage}
+
+\begin{document}
+
+\begin{center}
+	\textbf{{\LARGE Embedding Safety Behind the Wheel}}\\
+\end{center}
+\begin{center}
+	\large{Timothy D. Kim}
+\end{center}
+
+\begin{multicols}{2}
+\paragraph*{}
+\textbf{\textit{Abstract --} An analogy is often made that the CPU is the brain of the computer. As variables are allocated to memory to be processed by the CPU, improper or erratic memory access can lead to segmentation faults. While in software engineering errors such as this can be debugged, the human brain proves a task far more difficult. The operating environment of one’s life is filled with distractions trying to allocate memory for your attention. In an attempt to improve vehicle safety, this paper will deference a common cause for automobile accidents and propose the use of VROOM, a system designed to remove an unnecessary access of your attention.}
+\begin{center}
+	I. INTRODUCTION
+\end{center}
+In the automotive industry, safety has always been at the forefront of importance which has allowed tremendous growth for this sector over the past century. However with the introduction of automobiles into society's daily life, a new statistic was formed. Today, roadway injuries account for about 2.5\% of all yearly deaths for the human race [1]. In the United States, traffic collisions are a leading cause of preventable death above firearms [2]. As is natural with the human nature, we all possess intrinsic fears. We fear the blackness of our rooms at dusk, the frail edge above a towering drop, the misfortune of criminal activity. Yet as we awaken and begin our morning routines, we find ourselves getting into our cars and begin driving. It has become such second nature that we arrive at our destination without recollection of the journey. Or its inherent danger, deceived by our own self-proclaimed immunity. However in recent years, even as the number of drivers increase, the rate of fatality has been dropping. This can be attributed to the research and development of embedded safety systems in modern automobiles.
+\begin{center}
+	II. DRIVER'S DILEMMA
+\end{center}
+The current technological age has led to improvements in virtually every facet of our lives. Back during the release of Microsoft's operating system Windows 98, household computer ownership within the United States was 36\% with just 18\% having internet access [3]. In just under two decades, this figure has jumped to 84\% with over 63\% owning smartphones [4]. This tremendous growth has allowed a vast majority of the population to have constant access to the internet and its information. However if one were to look at a roadway empty today, they would be hard pressed to see any difference from decades ago. Technology on the roadways has stagnated.
+\\
+\includegraphics[width=8cm]{censusinternet}
+\begin{center}
+{\footnotesize Figure 1: Census data}
+\end{center}
+Currently time critical, important information is still being delivered to the driver in archaic methods. This causes many to attempt to obtain this information by the means of a mobile internet device. Device usage forces the user to divert their attention away from the primary objective of safe and proper driving techniques. In the U.S. approximately 1150 people are injured and 10 killed every single day in distracted driver crashes [5]. For an activity which a majority of the population partakes every single day [6], there must be a better information delivery system. One that can be deliver time/location relevant data on demand with absolute zero user interaction.  
+\begin{center}
+	III. CURRENT PRECAUTIONARIES
+\end{center}
+No longer are roads merely lines in a spice trade route. Government departments have been formed and with them the administration and creation of regulations for the roadways. There are many safety related systems in place but information delivery to drivers had not been ideal. There are Variable-message signs but they only provide a single static location for information delivery limited by the speed in which the driver can properly interpret the data. Use of signal polluted AM radio broadcasts are only as effective as the prompt to the driver to tune in. Even traffic cones are with faults. They do not possess the ability to deliver any information to driver but merely alert and divert traffic at a zero mile range. No single solution is ideal but the combination of all of these systems have allowed us to scrape the bottom of adequacy. Rather than try to mend and bandage the analog world of the roadways, a simpler solution could be to adapt.
+\begin{center}
+	IV. VROOM
+\end{center}
+In an attempt to decrease mobile phone usage while driving, Team VSP has developed a mobile phone application to be used specifically while driving. VROOM or Virtual Roadway Obstruction Online Management. 
+\\
+\includegraphics[width=8cm]{diagram}
+\begin{center}
+{\footnotesize Figure 2: Context diagram}
+\end{center}
+A proof of concept system developed to make use of the growing number of connected drivers to increase safety. The system consists of two major partitions. One part resides as an application on a driver's smartphone device.
+\\
+\includegraphics[width=8cm]{vpswebmed}
+\begin{center}
+{\footnotesize Figure 3: VROOM web interface}
+\end{center}
+The second is a connected webpage/server in which the phone connects too. The application, once installed on the driver’s device, cannot be opened. It is non interactive and to a user's knowledge does not exist. It is designed to run in the background hidden like a systems process. When certain conditions are met or when the application feels appropriate, the phone will query for a retrieval of hazard traffic data from the server. The server will then proceed to send location data back to the phone where the application will now have an updated data structure of hazard data. Whenever the driver meets proximity requirements, auditory alerts will be played to notify of said hazard data and repeated as determined by the algorithm. The database of hazards will be defined by the use of the private webpage only intended for official parties with no use of crowdsourcing. Relevant parties can include law enforcement agencies, fire departments, and government employees. The web page will facilitate the only human interactions and made very user friendly. The use of this network allows for instant updates of all potential hazards as they occur with easy adoption and no distraction to the driver.
+\begin{center}
+	V. EMBEDDING SAFETY
+\end{center}
+The mission of our project is to ultimately embed safety and peace of mind to all the life endearing. The youthful child behind the wheel for the first time. The petrified father whose outfit of choice is a seatbelt tourniquet. The antsy mother at home peeking through the blinds for the slight of familiar smiles. The unsuspecting neighbor walking his dog. In building our system, the team’s concept was built to prove that this kind of system is viable. The end goal vision is to integrate the application into the inner workings of the motor vehicle. With an embedded solution we remove the need for the mobile device completely. This removes the barrier to entry for the driver. Usability no longer depends on an external piece of hardware. Battery depletion no longer a lingering issue. Increased scrutiny and the ability pass all safety regulations. Vastly more simple and cost effect to implement than other features. Failure of system puts no additive danger to the driver’s safety status quo. Whoever or whatever it may help, the use of this system would only improve its chances of another tomorrow, which we believe is the only necessary return on investment.
+\\
+\includegraphics[width=8cm]{deaths}
+\begin{center}
+{\footnotesize Figure 4: Actual Causes of Death}
+\end{center}
+\begin{center}
+	VI. CONCLUSION
+\end{center}
+Our deepest Homo sapient instincts is to survive and repopulate. Most do need to reach into their primal thoughts for the want to feel safe. We endanger ourselves everyday with every action we take. The use and implementation of VROOM as a roadway hazard alert system is one maneuver to try and take control of an unpredictable occurrence. While road safety has been improving over the years distracted driving has been on the increase since the integration of smartphones into society. VROOM is designed to try and detach one extra incentive to take your hand off the wheel. Instant gratification with an interaction-less implementation. VROOM aims to allow one extra thought from having to be scribbled into one's mental agenda. Increasing vehicle safety seems like never ending road trip but our hope is to try and solve it one right hand turn at a time.
+
+\begin{thebibliography}{9}
+\bibitem{cdc1}
+"Deaths and Mortality." Centers for Disease Control and Prevention. CDC, Feb. 2015.
+\bibitem{wiki}
+Mokdad, Ali, James Marks, and Donna Stroup. "Actual Causes of Death in the United States" American Medical Association. JAMA, 2004.
+\bibitem{census1}
+Day, Jennifer C., Alex Janus, and Jessica Davis. "Computer and Internet Use in the United States: 2003." Washington, DC: U.S. Dept. of Commerce, Economics and Statistics Administration, U.S. Census Bureau, 2005.
+\bibitem{census2}
+File, Thom, and Camille Ryan. "Computer and Internet Use in the United States: 2013." Washington, DC: U.S. Dept. of Commerce, Economics and Statistics Administration, U.S. Census Bureau, 2014.
+\bibitem{cdc2}
+"Distracted Driving." Centers for Disease Control and Prevention. CDC, 10 Oct. 2014.
+\bibitem{Texas}
+Lomax, Tim, David Schrank, and Bill Eisele. "Urban Mobility Information." Urban Mobility Information. Texas A\&M Transportation Institute, Dec. 2012.
+\end{thebibliography}
+
+\end{multicols}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\end{document}		
