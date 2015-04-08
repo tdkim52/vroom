@@ -1,0 +1,11 @@
+[17-Mar-2015 00:58:57 America/Chicago] PHP Warning:  mysql_connect(): Unknown MySQL server host 'db location' (0) in /home2/tdk/public_html/vsp/login.php on line 4
+[17-Mar-2015 01:06:38 America/Chicago] PHP Warning:  mysql_connect(): Access denied for user 'tdk_admin'@'50.87.146.115' (using password: YES) in /home2/tdk/public_html/vsp/login.php on line 4
+[17-Mar-2015 01:10:52 America/Chicago] PHP Warning:  mysql_connect(): Access denied for user 'tdk_admin'@'50.87.146.115' (using password: YES) in /home2/tdk/public_html/vsp/login.php on line 4
+[17-Mar-2015 01:10:55 America/Chicago] PHP Warning:  mysql_connect(): Access denied for user 'tdk_admin'@'50.87.146.115' (using password: YES) in /home2/tdk/public_html/vsp/login.php on line 4
+[17-Mar-2015 01:10:56 America/Chicago] PHP Warning:  mysql_connect(): Access denied for user 'tdk_admin'@'50.87.146.115' (using password: YES) in /home2/tdk/public_html/vsp/login.php on line 4
+[17-Mar-2015 01:12:45 America/Chicago] PHP Warning:  mysql_connect(): Access denied for user 'username'@'50.87.146.115' (using password: YES) in /home2/tdk/public_html/vsp/login.php on line 4
+[17-Mar-2015 01:12:47 America/Chicago] PHP Warning:  mysql_connect(): Access denied for user 'username'@'50.87.146.115' (using password: YES) in /home2/tdk/public_html/vsp/login.php on line 4
+[17-Mar-2015 01:12:49 America/Chicago] PHP Warning:  mysql_connect(): Access denied for user 'username'@'50.87.146.115' (using password: YES) in /home2/tdk/public_html/vsp/login.php on line 4
+[17-Mar-2015 01:15:32 America/Chicago] PHP Warning:  mysql_connect(): Access denied for user 'admin'@'50.87.146.115' (using password: YES) in /home2/tdk/public_html/vsp/login.php on line 4
+[17-Mar-2015 01:15:35 America/Chicago] PHP Warning:  mysql_connect(): Access denied for user 'admin'@'50.87.146.115' (using password: YES) in /home2/tdk/public_html/vsp/login.php on line 4
+[17-Mar-2015 01:17:01 America/Chicago] PHP Warning:  mysql_connect(): Unknown MySQL server host 'db location' (0) in /home2/tdk/public_html/vsp/add.php on line 3
