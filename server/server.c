@@ -154,6 +154,7 @@ int main (int argc, char *argv[])
 	  exit(1);
       }
       else {
+	  printf("Obtaining hazards from database...\n");
 	  printf("Sending coordinates file...\n");
       } 
   }
