@@ -1,4 +1,3 @@
-# vroom
-Virtual Roadway Online Obstruction Management
+# vroom : Virtual Roadway Online Obstruction Management
 
-Only initial commit due to switch from cvs to git
+Initial commit: transition from cvs to git
