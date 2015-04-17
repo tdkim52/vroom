@@ -5,12 +5,15 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
 import android.content.Intent;
 import android.content.IntentSender.SendIntentException;
+import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.TextView;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationServices;
 
 
 public class GooglePlayServicesActivity extends Activity implements
@@ -63,6 +66,7 @@ public class GooglePlayServicesActivity extends Activity implements
                     // Optionally, add additional APIs and scopes if required.
                     .addConnectionCallbacks(this)
                     .addOnConnectionFailedListener(this)
+                    .addApi(LocationServices.API)
                     .build();
         }
         mGoogleApiClient.connect();
@@ -114,8 +118,15 @@ public class GooglePlayServicesActivity extends Activity implements
      */
     @Override
     public void onConnected(Bundle connectionHint) {
+        TextView mLatitudeText = null;
+        TextView mLongitudeText = null;
         Log.i(TAG, "GoogleApiClient connected");
         // TODO: Start making API requests.
+        Location mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+        if (mLastLocation != null) {
+            mLatitudeText.setText(String.valueOf(mLastLocation.getLatitude()));
+            mLongitudeText.setText(String.valueOf(mLastLocation.getLongitude()));
+        }
     }
 
     /**
