@@ -12,12 +12,15 @@ import android.util.Log;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 
 
 public class GooglePlayServicesActivity extends Activity implements
         GoogleApiClient.ConnectionCallbacks,
-        GoogleApiClient.OnConnectionFailedListener {
+        GoogleApiClient.OnConnectionFailedListener,
+        LocationListener {
 
     private static final String TAG = "GooglePlayServicesActivity";
 
@@ -42,8 +45,14 @@ public class GooglePlayServicesActivity extends Activity implements
     /**
      * Called when the activity is starting. Restores the activity state.
      */
+    private LocationRequest mLocationRequest;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        mLocationRequest = LocationRequest.create()
+                .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
+                .setInterval(10 * 1000)
+                .setFastestInterval(1 * 1000);
         super.onCreate(savedInstanceState);
         if (savedInstanceState != null) {
             mIsInResolution = savedInstanceState.getBoolean(KEY_IN_RESOLUTION, false);
@@ -78,6 +87,7 @@ public class GooglePlayServicesActivity extends Activity implements
     @Override
     protected void onStop() {
         if (mGoogleApiClient != null) {
+            LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
             mGoogleApiClient.disconnect();
         }
         super.onStop();
@@ -121,12 +131,11 @@ public class GooglePlayServicesActivity extends Activity implements
         // TODO: Start making API requests.
 
         Location mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-        if (mLastLocation != null) {
-            Log.v(TAG, String.valueOf(mLastLocation.getLatitude()));
-            Log.v(TAG, String.valueOf(mLastLocation.getLongitude()));
+        if (mLastLocation == null) {
+            LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
         }
         else {
-            Log.v("", "NO LAST LOCATION");
+            handleNewLocation(mLastLocation);
         }
 
     }
@@ -172,5 +181,14 @@ public class GooglePlayServicesActivity extends Activity implements
             Log.e(TAG, "Exception while starting resolution activity", e);
             retryConnecting();
         }
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+        handleNewLocation(location);
+    }
+
+    private void handleNewLocation(Location location) {
+        Log.v(TAG, location.toString());
     }
 }
