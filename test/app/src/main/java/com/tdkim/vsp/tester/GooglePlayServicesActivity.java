@@ -1,21 +1,33 @@
 package com.tdkim.vsp.tester;
 
 import android.app.Activity;
+import android.app.PendingIntent;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
 import android.content.Intent;
 import android.content.IntentSender.SendIntentException;
+import android.content.SharedPreferences;
 import android.location.Location;
 import android.os.Bundle;
+import android.provider.SyncStateContract;
 import android.util.Log;
+import android.widget.Button;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.location.GeofencingRequest;
+import com.google.android.gms.location.Geofence;
 
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class GooglePlayServicesActivity extends Activity implements
         GoogleApiClient.ConnectionCallbacks,
@@ -36,6 +48,11 @@ public class GooglePlayServicesActivity extends Activity implements
      */
     private GoogleApiClient mGoogleApiClient;
 
+    private ArrayList<Geofence> mGeofenceList;
+    private boolean mGeofencesAdded;
+    private PendingIntent mGeofencePendingIntent;
+    private SharedPreferences mSharedPreferences;
+
     /**
      * Determines if the client is in a resolution state, and
      * waiting for resolution intent to return.
@@ -47,6 +64,14 @@ public class GooglePlayServicesActivity extends Activity implements
      */
     private LocationRequest mLocationRequest;
 
+    private static final String PACKAGE_NAME = "com.tdk.vsp.tester";
+    private static final String SHARED_PREFERENCES_NAME = PACKAGE_NAME + ".SHARED_PREFERENCES_NAME";
+    private static final String GEOFENCES_ADDED_KEY = PACKAGE_NAME + ".GEOFENCES_ADDED_KEY";
+    public static final long GEOFENCE_EXPIRATION_IN_HOURS = 12;
+    public static final long GEOFENCE_EXPIRATION_IN_MILLISECONDS =
+            GEOFENCE_EXPIRATION_IN_HOURS * 60 * 60 * 1000; // 12 hours
+    public static final float GEOFENCE_RADIUS_IN_METERS = 160900; // 1 mile, 1.6 km
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         mLocationRequest = LocationRequest.create()
@@ -54,6 +79,13 @@ public class GooglePlayServicesActivity extends Activity implements
                 .setInterval(10 * 1000)
                 .setFastestInterval(1 * 1000);
         super.onCreate(savedInstanceState);
+
+        mGeofenceList = new ArrayList<Geofence>();
+        mGeofencePendingIntent = null;
+        mSharedPreferences = getSharedPreferences(SHARED_PREFERENCES_NAME, MODE_PRIVATE);
+        mGeofencesAdded = mSharedPreferences.getBoolean(GEOFENCES_ADDED_KEY, false);
+        populateGeofenceList();
+        Log.v(TAG, mGeofenceList.get(0).getRequestId());
         if (savedInstanceState != null) {
             mIsInResolution = savedInstanceState.getBoolean(KEY_IN_RESOLUTION, false);
         }
@@ -129,7 +161,6 @@ public class GooglePlayServicesActivity extends Activity implements
     public void onConnected(Bundle connectionHint) {
         Log.i(TAG, "GoogleApiClient connected");
         // TODO: Start making API requests.
-
         Location mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
         if (mLastLocation == null) {
             LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
@@ -137,7 +168,11 @@ public class GooglePlayServicesActivity extends Activity implements
         else {
             handleNewLocation(mLastLocation);
         }
-
+        LocationServices.GeofencingApi.addGeofences(
+                mGoogleApiClient,
+                getGeofencingRequest(),
+                getGeofencePendingIntent()
+        );
     }
 
     /**
@@ -182,6 +217,67 @@ public class GooglePlayServicesActivity extends Activity implements
             retryConnecting();
         }
     }
+
+    private GeofencingRequest getGeofencingRequest() {
+        GeofencingRequest.Builder builder = new GeofencingRequest.Builder();
+
+        // The INITIAL_TRIGGER_ENTER flag indicates that geofencing service should trigger a
+        // GEOFENCE_TRANSITION_ENTER notification when the geofence is added and if the device
+        // is already inside that geofence.
+        builder.setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER);
+
+        // Add the geofences to be monitored by geofencing service.
+        builder.addGeofences(mGeofenceList);
+
+        // Return a GeofencingRequest.
+        return builder.build();
+    }
+
+    private PendingIntent getGeofencePendingIntent() {
+        // Reuse the PendingIntent if we already have it.
+        if (mGeofencePendingIntent != null) {
+            return mGeofencePendingIntent;
+        }
+        Intent intent = new Intent(this, GeofenceService.class);
+        // We use FLAG_UPDATE_CURRENT so that we get the same pending intent back when calling
+        // addGeofences() and removeGeofences().
+        return PendingIntent.getService(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+    }
+
+    public void populateGeofenceList() {
+        HashMap<String, LatLng> hazards = new HashMap<String, LatLng>();
+        hazards.put("ACCIDENT", new LatLng(48.749091, -122.478098));
+
+        for (Map.Entry<String, LatLng> hazard : hazards.entrySet()) {
+
+            mGeofenceList.add(new Geofence.Builder()
+                    // Set the request ID of the geofence. This is a string to identify this
+                    // geofence.
+                    .setRequestId(hazard.getKey())
+
+                            // Set the circular region of this geofence.
+                    .setCircularRegion(
+                            hazard.getValue().latitude,
+                            hazard.getValue().longitude,
+                            GEOFENCE_RADIUS_IN_METERS
+                    )
+
+                    .setLoiteringDelay(10000)
+
+                            // Set the expiration duration of the geofence. This geofence gets automatically
+                            // removed after this period of time.
+                    .setExpirationDuration(GEOFENCE_EXPIRATION_IN_MILLISECONDS)
+
+                            // Set the transition types of interest. Alerts are only generated for these
+                            // transition. We track entry and exit transitions in this sample.
+                    .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER |
+                            Geofence.GEOFENCE_TRANSITION_EXIT | Geofence.GEOFENCE_TRANSITION_DWELL)
+
+                            // Create the geofence.
+                    .build());
+        }
+    }
+
 
     @Override
     public void onLocationChanged(Location location) {
