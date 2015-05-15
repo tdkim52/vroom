@@ -70,14 +70,14 @@ public class GooglePlayServicesActivity extends Activity implements
     public static final long GEOFENCE_EXPIRATION_IN_HOURS = 12;
     public static final long GEOFENCE_EXPIRATION_IN_MILLISECONDS =
             GEOFENCE_EXPIRATION_IN_HOURS * 60 * 60 * 1000; // 12 hours
-    public static final float GEOFENCE_RADIUS_IN_METERS = 160900; // 1 mile, 1.6 km
+    public static final float GEOFENCE_RADIUS_IN_METERS = 100; // 1 mile, 1.6 km
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         mLocationRequest = LocationRequest.create()
                 .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
                 .setInterval(10 * 1000)
-                .setFastestInterval(1 * 1000);
+                .setFastestInterval(5 * 1000);
         super.onCreate(savedInstanceState);
 
         mGeofenceList = new ArrayList<Geofence>();
@@ -110,6 +110,8 @@ public class GooglePlayServicesActivity extends Activity implements
                     .build();
         }
         mGoogleApiClient.connect();
+
+
     }
 
     /**
@@ -118,10 +120,10 @@ public class GooglePlayServicesActivity extends Activity implements
      */
     @Override
     protected void onStop() {
-        if (mGoogleApiClient != null) {
+        /*if (mGoogleApiClient != null) {
             LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
             mGoogleApiClient.disconnect();
-        }
+        }*/
         super.onStop();
     }
 
@@ -161,19 +163,19 @@ public class GooglePlayServicesActivity extends Activity implements
     public void onConnected(Bundle connectionHint) {
         Log.i(TAG, "GoogleApiClient connected");
         // TODO: Start making API requests.
+        LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
         Location mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-        if (mLastLocation == null) {
-            LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
-        }
-        else {
-            handleNewLocation(mLastLocation);
-        }
+
+        handleNewLocation(mLastLocation);
+
         LocationServices.GeofencingApi.addGeofences(
                 mGoogleApiClient,
                 getGeofencingRequest(),
                 getGeofencePendingIntent()
         );
+        //startService(new Intent(this, GeofenceService.class));
     }
+
 
     /**
      * Called when {@code mGoogleApiClient} connection is suspended.
@@ -246,7 +248,9 @@ public class GooglePlayServicesActivity extends Activity implements
 
     public void populateGeofenceList() {
         HashMap<String, LatLng> hazards = new HashMap<String, LatLng>();
-        hazards.put("ACCIDENT", new LatLng(48.749091, -122.478098));
+        hazards.put("ACCIDENT", new LatLng(48.732767, -122.485192));
+        hazards.put("ACCIDENT2", new LatLng(48.733343,-122.486056));
+        hazards.put("HOME", new LatLng(48.728644, -122.475841));
 
         for (Map.Entry<String, LatLng> hazard : hazards.entrySet()) {
 
@@ -262,7 +266,7 @@ public class GooglePlayServicesActivity extends Activity implements
                             GEOFENCE_RADIUS_IN_METERS
                     )
 
-                    .setLoiteringDelay(10000)
+                    .setLoiteringDelay(1000 * 5)
 
                             // Set the expiration duration of the geofence. This geofence gets automatically
                             // removed after this period of time.
@@ -271,7 +275,7 @@ public class GooglePlayServicesActivity extends Activity implements
                             // Set the transition types of interest. Alerts are only generated for these
                             // transition. We track entry and exit transitions in this sample.
                     .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER |
-                            Geofence.GEOFENCE_TRANSITION_EXIT | Geofence.GEOFENCE_TRANSITION_DWELL)
+                            Geofence.GEOFENCE_TRANSITION_DWELL | Geofence.GEOFENCE_TRANSITION_EXIT)
 
                             // Create the geofence.
                     .build());

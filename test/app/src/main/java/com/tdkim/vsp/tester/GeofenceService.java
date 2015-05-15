@@ -11,7 +11,9 @@ import android.util.Log;
 import java.util.ArrayList;
 import java.util.List;
 import android.text.TextUtils;
-
+import android.media.*;
+import android.net.Uri;
+import android.os.SystemClock;
 
 /**
  * An {@link IntentService} subclass for handling asynchronous task requests in
@@ -38,8 +40,10 @@ public class GeofenceService extends IntentService {
 
         int geofenceTransition = geofencingEvent.getGeofenceTransition();
 
-        if (geofenceTransition == Geofence.GEOFENCE_TRANSITION_ENTER ||
-                geofenceTransition == Geofence.GEOFENCE_TRANSITION_DWELL) {
+        if ((geofenceTransition == Geofence.GEOFENCE_TRANSITION_ENTER) ||
+                (geofenceTransition == Geofence.GEOFENCE_TRANSITION_DWELL) ||
+                (geofenceTransition == Geofence.GEOFENCE_TRANSITION_EXIT)) {
+
             List<Geofence> triggeringGeofences = geofencingEvent.getTriggeringGeofences();
 
             String geofenceTransitionDetails = getGeofenceTransitionDetails(
@@ -49,6 +53,33 @@ public class GeofenceService extends IntentService {
             );
             // notification would go here
             Log.v(TAG, geofenceTransitionDetails);
+            if (geofenceTransition == Geofence.GEOFENCE_TRANSITION_ENTER) {
+                try {
+                    Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+                    Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), notification);
+                    r.play();
+                } catch (Exception e) {
+                    Log.v(TAG, "Sound Error");
+                }
+            }
+            else if (geofenceTransition == Geofence.GEOFENCE_TRANSITION_EXIT){
+                try {
+                    Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE);
+                    Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), notification);
+                    r.play();
+                } catch (Exception e) {
+                    Log.v(TAG, "Sound Error");
+                }
+            }
+            else if (geofenceTransition == Geofence.GEOFENCE_TRANSITION_DWELL){
+                try {
+                    Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
+                    Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), notification);
+                    r.play();
+                } catch (Exception e) {
+                    Log.v(TAG, "Sound Error");
+                }
+            }
         }
         else {
             Log.v(TAG, "Error on geofence enter");
