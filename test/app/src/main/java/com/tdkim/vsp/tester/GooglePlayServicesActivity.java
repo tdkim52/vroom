@@ -70,7 +70,7 @@ public class GooglePlayServicesActivity extends Activity implements
     public static final long GEOFENCE_EXPIRATION_IN_HOURS = 12;
     public static final long GEOFENCE_EXPIRATION_IN_MILLISECONDS =
             GEOFENCE_EXPIRATION_IN_HOURS * 60 * 60 * 1000; // 12 hours
-    public static final float GEOFENCE_RADIUS_IN_METERS = 100; // 1 mile, 1.6 km
+    public static final float GEOFENCE_RADIUS_IN_METERS = 50; // 1 mile, 1.6 km
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -248,9 +248,9 @@ public class GooglePlayServicesActivity extends Activity implements
 
     public void populateGeofenceList() {
         HashMap<String, LatLng> hazards = new HashMap<String, LatLng>();
-        hazards.put("ACCIDENT", new LatLng(48.732767, -122.485192));
-        hazards.put("ACCIDENT2", new LatLng(48.733343,-122.486056));
-        hazards.put("HOME", new LatLng(48.728644, -122.475841));
+        hazards.put("Stairs", new LatLng(48.733343,-122.486056));
+        hazards.put("AW", new LatLng(48.732528, -122.486627));
+        hazards.put("Triangle", new LatLng(48.734944, -122.485932));
 
         for (Map.Entry<String, LatLng> hazard : hazards.entrySet()) {
 

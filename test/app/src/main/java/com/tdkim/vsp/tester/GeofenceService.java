@@ -62,24 +62,24 @@ public class GeofenceService extends IntentService {
                     Log.v(TAG, "Sound Error");
                 }
             }
-            else if (geofenceTransition == Geofence.GEOFENCE_TRANSITION_EXIT){
-                try {
-                    Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE);
-                    Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), notification);
-                    r.play();
-                } catch (Exception e) {
-                    Log.v(TAG, "Sound Error");
-                }
-            }
-            else if (geofenceTransition == Geofence.GEOFENCE_TRANSITION_DWELL){
-                try {
-                    Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
-                    Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), notification);
-                    r.play();
-                } catch (Exception e) {
-                    Log.v(TAG, "Sound Error");
-                }
-            }
+//            else if (geofenceTransition == Geofence.GEOFENCE_TRANSITION_EXIT){
+//                try {
+//                    Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE);
+//                    Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), notification);
+//                    r.play();
+//                } catch (Exception e) {
+//                    Log.v(TAG, "Sound Error");
+//                }
+//            }
+//            else if (geofenceTransition == Geofence.GEOFENCE_TRANSITION_DWELL){
+//                try {
+//                    Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
+//                    Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), notification);
+//                    r.play();
+//                } catch (Exception e) {
+//                    Log.v(TAG, "Sound Error");
+//                }
+//            }
         }
         else {
             Log.v(TAG, "Error on geofence enter");
