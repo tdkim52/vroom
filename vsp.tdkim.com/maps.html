@@ -24,6 +24,9 @@
 			setMarkers(map, hazards);
 			google.maps.event.addListener(map, 'rightclick', function(event) {
 				placeMarker(event.latLng, map);
+
+    				document.getElementById('lat_text').value = event.latLng.lat();
+    				document.getElementById('lng_text').value = event.latLng.lng();
 			});
 		}
 		
@@ -44,6 +47,9 @@
 			});
 		}
 		
+
+//test lat 48.75126561487703 and lng -122.4356031339111
+
 		function setMarkers(map, locations) {
 			for (var i = 0; i < locations.length; i++) {
 				var hazard =  locations[i];
@@ -61,11 +67,49 @@
 				})(marker, i));
 			}
 		}
+
+		function form2map (){
+			var hazard_drop_box = document.getElementById("type_haz");
+			var selected_hazard = hazard_drop_box.options[hazard_drop_box.seletedIndex].value;
+			var new_lat = document.getElementById('lat_text').value;
+			var new_lng = document.getElementById('lng_text').value;
+			var new_hazard = {selected_hazard, new_lat, new_lng};
+			
+			setMarkers(map,new_hazard);
+
+		}
 		
 		google.maps.event.addDomListener(window, 'load', initialize);
+
 	</script>
+
     </head>
     <body>
-    <div id="map-canvas" style="width: 75%; height: 100%"></div>
+    <div id="map-canvas" style="width: 60%; height: 70%"></div>
+
+	<aside>
+		Hazards<br>
+		<select id="type_haz" name="hazards_menu">
+		<option value="construction">construction</option>
+		<option value="black_ice">black ice</option>
+		<option value="car_accident">car accident</option>
+		</select> 
+
+
+		<form action="action_page.php">
+		Latitude:<br>
+		<input id="lat_text" type="text" name="lat_box">
+		<br>
+		Longitude:<br>
+		<input id="lng_text" type="text" name="lng_box">
+		<br><br>
+	
+		<textarea name ="message" cols="50" rows="5" maxlength="140">
+		</textarea>
+		<br>
+		<input type="submit" value="Submit" onclick="form2map();">
+		</form> 
+	</aside>
+
     </body>
 </html>

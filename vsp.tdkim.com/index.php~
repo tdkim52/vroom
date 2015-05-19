@@ -22,16 +22,16 @@ mysql_select_db("tdk_vsp") or die(mysql_error());
 			<!DOCTYPE html>
 			<html>
 			<title>VSP</title>
-				<head>
-				<style type="text/css">
+			  <head>
+			    <style type="text/css">
 				html { height: 100% }
 				body { height: 100%; margin: 0; padding: 0 }
-				#map-canvas {
-				width: 75%;
-				height: 100%;
+			      #map-canvas {
+			        width: 100%;
+			        height: 100%;
 					background-color: #CCC;
-				}
-				</style>
+			      }
+			    </style>
 				<script src="https://maps.googleapis.com/maps/api/js"></script>
 				<script>
 					function initialize() {
@@ -45,12 +45,9 @@ mysql_select_db("tdk_vsp") or die(mysql_error());
 						setMarkers(map, hazards);
 						google.maps.event.addListener(map, 'rightclick', function(event) {
 							placeMarker(event.latLng, map);
-
-								document.getElementById('lat_text').value = event.latLng.lat();
-								document.getElementById('lng_text').value = event.latLng.lng();
 						});
 					}
-		
+					
 					var hazards = [
 						['aggressive slackliners', 48.738779, -122.484702],
 						['construction, left lane blocked', 48.749091, -122.478098],
@@ -58,19 +55,16 @@ mysql_select_db("tdk_vsp") or die(mysql_error());
 						['collision', 47.617421,-122.201673],
 						['elephant asleep on path', -20.239326, 46.515856]
 					];
-		
+					
 					var infowindow = new google.maps.InfoWindow();
-		
+					
 					function placeMarker(location, map) {
 						var pin = new google.maps.Marker({
 							position: location,
 							map: map
 						});
 					}
-		
-
-			//test lat 48.75126561487703 and lng -122.4356031339111
-
+					
 					function setMarkers(map, locations) {
 						for (var i = 0; i < locations.length; i++) {
 							var hazard =  locations[i];
@@ -88,51 +82,13 @@ mysql_select_db("tdk_vsp") or die(mysql_error());
 							})(marker, i));
 						}
 					}
-
-					function form2map (){
-						var hazard_drop_box = document.getElementById("type_haz");
-						var selected_hazard = hazard_drop_box.options[hazard_drop_box.seletedIndex].value;
-						var new_lat = document.getElementById('lat_text').value;
-						var new_lng = document.getElementById('lng_text').value;
-						var new_hazard = {selected_hazard, new_lat, new_lng};
-			
-						setMarkers(map,new_hazard);
-
-					}
-		
+					
 					google.maps.event.addDomListener(window, 'load', initialize);
-
 				</script>
-
-				</head>
-				<body>
-				<div id="map-canvas" style="width: 60%; height: 70%"></div>
-
-				<aside>
-					Hazards<br>
-					<select id="type_haz" name="hazards_menu">
-					<option value="construction">construction</option>
-					<option value="black_ice">black ice</option>
-					<option value="car_accident">car accident</option>
-					</select> 
-
-
-					<form action="action_page.php">
-					Latitude:<br>
-					<input id="lat_text" type="text" name="lat_box">
-					<br>
-					Longitude:<br>
-					<input id="lng_text" type="text" name="lng_box">
-					<br><br>
-	
-					<textarea name ="message" cols="50" rows="5" maxlength="140">
-					</textarea>
-					<br>
-					<input type="submit" value="Submit" onclick="form2map();">
-					</form> 
-				</aside>
-
-				</body>
+			  </head>
+			  <body>
+			    <div id="map-canvas" style="width: 100%; height: 100%"></div>
+			  </body>
 			</html>
 			<?	
  		}
