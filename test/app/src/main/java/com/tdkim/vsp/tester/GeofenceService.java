@@ -12,8 +12,6 @@ import java.util.ArrayList;
 import java.util.List;
 import android.text.TextUtils;
 import android.media.*;
-import android.net.Uri;
-import android.os.SystemClock;
 
 /**
  * An {@link IntentService} subclass for handling asynchronous task requests in
@@ -55,9 +53,8 @@ public class GeofenceService extends IntentService {
             Log.v(TAG, geofenceTransitionDetails);
             if (geofenceTransition == Geofence.GEOFENCE_TRANSITION_ENTER) {
                 try {
-                    Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-                    Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), notification);
-                    r.play();
+                    MediaPlayer mp = MediaPlayer.create(this, com.tdkim.vsp.tester.R.raw.sound1);
+                    mp.start();
                 } catch (Exception e) {
                     Log.v(TAG, "Sound Error");
                 }
