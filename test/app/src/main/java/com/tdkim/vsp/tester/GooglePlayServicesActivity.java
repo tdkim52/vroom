@@ -24,6 +24,19 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.location.GeofencingRequest;
 import com.google.android.gms.location.Geofence;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.net.URI;
+import java.net.URL;
+import java.net.URLConnection;
+import java.net.URLEncoder;
+
+//import url?.HttpResponse;
+//import url?.client.HttpClient
+//import url?.client.methods.HttpGet
+//import url?.impl.client.DefaultHttpClient;
+
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -168,6 +181,9 @@ public class GooglePlayServicesActivity extends Activity implements
 
         handleNewLocation(mLastLocation);
 
+        //geoHash = getNewGeofences(mLastLocation);
+        //while !end of geoArray:
+            //PopulateGeofenceList(geoHash) --rewrite to take in Hashmap, instead of builtin
         LocationServices.GeofencingApi.addGeofences(
                 mGoogleApiClient,
                 getGeofencingRequest(),
@@ -290,5 +306,13 @@ public class GooglePlayServicesActivity extends Activity implements
 
     private void handleNewLocation(Location location) {
         Log.v(TAG, location.toString());
-    }
+    }   //Connect to server, get input in DB around current loc.
+
+   /* private void getNewGeofences(Location location){
+        //login
+        //send lat/long
+        //get hazard message
+        //parse into array?
+        //return array
+    }*/
 }
