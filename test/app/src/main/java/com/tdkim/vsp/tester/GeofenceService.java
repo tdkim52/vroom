@@ -13,6 +13,8 @@ import java.util.List;
 import android.text.TextUtils;
 import android.media.*;
 
+import com.tdkim.vsp.tester.R;
+
 /**
  * An {@link IntentService} subclass for handling asynchronous task requests in
  * a service on a separate handler thread.
@@ -53,7 +55,7 @@ public class GeofenceService extends IntentService {
             Log.v(TAG, geofenceTransitionDetails);
             if (geofenceTransition == Geofence.GEOFENCE_TRANSITION_ENTER) {
                 try {
-                    MediaPlayer mp = MediaPlayer.create(this, com.tdkim.vsp.tester.R.raw.sound1);
+                    MediaPlayer mp = MediaPlayer.create(this, com.tdkim.vsp.tester.R.raw.harzard);
                     mp.start();
                 } catch (Exception e) {
                     Log.v(TAG, "Sound Error");

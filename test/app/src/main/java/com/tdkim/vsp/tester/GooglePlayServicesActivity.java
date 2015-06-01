@@ -92,6 +92,8 @@ public class GooglePlayServicesActivity extends Activity implements
             GEOFENCE_EXPIRATION_IN_HOURS * 60 * 60 * 1000; // 12 hours
     public static final float GEOFENCE_RADIUS_IN_METERS = 50; // 1 mile, 1.6 km
 
+    public ArrayList<HashMap<String, LatLng>> hazardList = new ArrayList<>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         mLocationRequest = LocationRequest.create()
@@ -104,7 +106,16 @@ public class GooglePlayServicesActivity extends Activity implements
         mGeofencePendingIntent = null;
         mSharedPreferences = getSharedPreferences(SHARED_PREFERENCES_NAME, MODE_PRIVATE);
         mGeofencesAdded = mSharedPreferences.getBoolean(GEOFENCES_ADDED_KEY, false);
+        //String test = Integer.toString(hazardList.size());
+        //Log.v(TAG, Integer.toString(hazardList.size()));
+        try {
+            new LoadAllHazards().execute().get();
+        }
+        catch (Exception ex) {
+            ex.printStackTrace();
+        }
         populateGeofenceList();
+        Log.v(TAG, Integer.toString(hazardList.size()));
         Log.v(TAG, mGeofenceList.get(0).getRequestId());
         if (savedInstanceState != null) {
             mIsInResolution = savedInstanceState.getBoolean(KEY_IN_RESOLUTION, false);
@@ -272,6 +283,7 @@ public class GooglePlayServicesActivity extends Activity implements
     private ProgressDialog pDialog;
 
     class LoadAllHazards extends AsyncTask<String, String, String> {
+        //ArrayList<HashMap<String, LatLng>> hazardList = new ArrayList<>();
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
@@ -282,143 +294,79 @@ public class GooglePlayServicesActivity extends Activity implements
             pDialog.show();
         }
         protected String doInBackground(String... args) {
+            //hazardList = null;
+            //JSONParser jsonParser = new JSONParser();
+            String url_AllHazards = "http://api.tdkim.com/hazards.php";
+            final String TAG_SUCESS = "success";
+            final String TAG_HAZARD = "hazard";
+            final String TAG_ID = "id";
+            final String TAG_TYPE = "type";
+            final String TAG_LATITUDE = "latitude";
+            final String TAG_LONGITUDE = "longitude";
+            final String TAG_MESSAGE = "message";
 
-        }
+            JSONArray hazards = null;
+            String result = null;
+            HttpURLConnection con = null;
+            //Log.v(TAG, "XXX");
 
-    }
-
-// NetworkOnMainThreadException !!!!!!! FIX  WITH ASYNC
-
-    public ArrayList<HashMap<String, LatLng>> getHazards() {
-        ArrayList<HashMap<String, LatLng>> hazardList = new ArrayList<>();
-        //JSONParser jsonParser = new JSONParser();
-        String url_AllHazards = "http://api.tdkim.com/hazards.php";
-        final String TAG_SUCESS = "success";
-        final String TAG_HAZARD = "hazard";
-        final String TAG_ID = "id";
-        final String TAG_TYPE = "type";
-        final String TAG_LATITUDE = "latitude";
-        final String TAG_LONGITUDE = "longitude";
-        final String TAG_MESSAGE = "message";
-
-        JSONArray hazards = null;
-        String result = null;
-        HttpURLConnection con = null;
-        Log.v(TAG, "XXX");
-
-        try {
-            URL url = new URL("http://api.tdkim.com/hazards.php?latitude=123&longitude=123");
-            con = (HttpURLConnection) url.openConnection();
-            BufferedReader reader = null;
-            InputStream is = con.getInputStream();
-            Log.v(TAG, "VVV");
-            InputStreamReader isr = new InputStreamReader(is);
-            Log.v(TAG, "RRR");
-            reader = new BufferedReader(isr);
-            StringBuilder sb = new StringBuilder();
-            String line = "";
-            Log.v(TAG, "OOO");
-            while ((line = reader.readLine()) != null) {
-                sb.append(line + "\n");
-            }
-            result = sb.toString();
-            Log.v(TAG, "ONE");
-            JSONObject json = new JSONObject(result);
-            int success = json.getInt(TAG_SUCESS);
-            if (success == 1) {
-                Log.v(TAG, "TWO");
-                hazards = json.getJSONArray(TAG_HAZARD);
-                for (int i = 0; i < hazards.length(); i++) {
-                    Log.v(TAG, "THREE");
-                    JSONObject h = hazards.getJSONObject(i);
-                    String id = h.getString(TAG_ID);
-                    String type = h.getString(TAG_TYPE);
-                    Double lat = h.getDouble(TAG_LATITUDE);
-                    Double lon = h.getDouble(TAG_LONGITUDE);
-                    HashMap<String, LatLng> map = new HashMap<>();
-                    map.put(type, new LatLng(lat,lon));
-                    Log.v(TAG, "FOUR");
-                    hazardList.add(map);
-                    Log.v(TAG, type);
+            try {
+                URL url = new URL("http://api.tdkim.com/hazards.php?latitude=123&longitude=123");
+                con = (HttpURLConnection) url.openConnection();
+                BufferedReader reader = null;
+                InputStream is = con.getInputStream();
+                //Log.v(TAG, "VVV");
+                InputStreamReader isr = new InputStreamReader(is);
+                //Log.v(TAG, "RRR");
+                reader = new BufferedReader(isr);
+                StringBuilder sb = new StringBuilder();
+                String line = "";
+                //Log.v(TAG, "OOO");
+                while ((line = reader.readLine()) != null) {
+                    sb.append(line + "\n");
                 }
+                result = sb.toString();
+                //Log.v(TAG, "ONE");
+                JSONObject json = new JSONObject(result);
+                int success = json.getInt(TAG_SUCESS);
+                if (success == 1) {
+                    //Log.v(TAG, "TWO");
+                    hazards = json.getJSONArray(TAG_HAZARD);
+                    for (int i = 0; i < hazards.length(); i++) {
+                        //Log.v(TAG, "THREE");
+                        JSONObject h = hazards.getJSONObject(i);
+                        String id = h.getString(TAG_ID);
+                        String type = h.getString(TAG_TYPE);
+                        Double lat = h.getDouble(TAG_LATITUDE);
+                        Double lon = h.getDouble(TAG_LONGITUDE);
+                        HashMap<String, LatLng> map = new HashMap<>();
+                        map.put(type, new LatLng(lat,lon));
+                        //Log.v(TAG, "FOUR");
+                        hazardList.add(map);
+                        Log.v(TAG, type);
+                    }
 
+                }
+                else {
+                    Log.v(TAG, "not successful");
+                    return null;
+                }
             }
-            else {
-                Log.v(TAG, "not successful");
-                return null;
+            catch (Exception ex) {
+                //Log.v(TAG, ex.getMessage());
+                ex.printStackTrace();
             }
+            finally {
+                con.disconnect();
+            }
+            return null;
+            //return hazardList;
         }
-        catch (Exception ex) {
-            //Log.v(TAG, ex.getMessage());
-            ex.printStackTrace();
+
+        protected void onPostExecute(String url) {
+            pDialog.dismiss();
         }
-        finally {
-            con.disconnect();
-        }
-        return hazardList;
     }
-
-//        try {
-//            URL url = new URL("http://api.tdkim.com/hazards.php?latitude=123&longitude=123");
-//            HttpURLConnection con = (HttpURLConnection) url
-//                    .openConnection();
-//            BufferedReader reader = null;
-//            try {
-//                reader = new BufferedReader(new InputStreamReader(con.getInputStream()));
-//                StringBuilder sb = new StringBuilder();
-//                String line = "";
-//                while ((line = reader.readLine()) != null) {
-//                    sb.append(line + "\n");
-//                }
-//                result = sb.toString();
-//                Log.v(TAG, "ONE");
-//                JSONObject json = new JSONObject(result);
-//                int success = json.getInt(TAG_SUCESS);
-//                if (success == 1) {
-//                    Log.v(TAG, "TWO");
-//                    hazards = json.getJSONArray(TAG_HAZARD);
-//                    for (int i = 0; i < hazards.length(); i++) {
-//                        Log.v(TAG, "THREE");
-//                        JSONObject h = hazards.getJSONObject(i);
-//                        String id = h.getString(TAG_ID);
-//                        String type = h.getString(TAG_TYPE);
-//                        Double lat = h.getDouble(TAG_LATITUDE);
-//                        Double lon = h.getDouble(TAG_LONGITUDE);
-//                        HashMap<String, LatLng> map = new HashMap<>();
-//                        map.put(type, new LatLng(lat,lon));
-//                        Log.v(TAG, "FOUR");
-//                        hazardList.add(map);
-//                        Log.v(TAG, type);
-//                    }
-//
-//                }
-//                else {
-//                   Log.v(TAG, "not successful");
-//                   return null;
-//                }
-//            }
-//            catch (Exception ex) {
-//                Log.v(TAG, ex.getCause() + "HERE1");
-//                //ex.printStackTrace();
-//            }
-//            finally {
-//                if (reader != null) {
-//                    try {
-//                        reader.close();
-//                    }
-//                    catch (Exception ex) {
-//                        Log.v(TAG, ex.getMessage());
-//                        //ex.printStackTrace();
-//                    }
-//                }
-//            }
-//        }
-//        catch (Exception ex) {
-//            Log.v(TAG, ex.getCause() + "HERE2");
-//            //ex.printStackTrace();
-//        }
-//        return hazardList;
-//    }
 
     public void populateGeofenceList() {
 //        HashMap<String, LatLng> hazards = new HashMap<String, LatLng>();
@@ -426,8 +374,10 @@ public class GooglePlayServicesActivity extends Activity implements
 //        hazards.put("AW", new LatLng(48.732528, -122.486627));
 //        hazards.put("Triangle", new LatLng(48.734944, -122.485932));
 
-        ArrayList<HashMap<String, LatLng>> hazardList = getHazards();
-        if (hazardList != null) {
+        //new LoadAllHazards().execute();
+
+        //ArrayList<HashMap<String, LatLng>> hazardList = getHazards();
+        if (hazardList.size() > 0) {
             for (int i = 0; i < hazardList.size(); i++){
                 //HashMap<String, LatLng> hazard = hazardList.get(i);
                 for (Map.Entry<String, LatLng> h : hazardList.get(i).entrySet()) {
@@ -458,34 +408,6 @@ public class GooglePlayServicesActivity extends Activity implements
                             .build());
                 }
             }
-//            for (Map.Entry<String, LatLng> hazard : hazard.entrySet()) {
-//
-//                mGeofenceList.add(new Geofence.Builder()
-//                        // Set the request ID of the geofence. This is a string to identify this
-//                        // geofence.
-//                        .setRequestId(hazard.getKey())
-//
-//                                // Set the circular region of this geofence.
-//                        .setCircularRegion(
-//                                hazard.getValue().latitude,
-//                                hazard.getValue().longitude,
-//                                GEOFENCE_RADIUS_IN_METERS
-//                        )
-//
-//                        .setLoiteringDelay(1000 * 5)
-//
-//                                // Set the expiration duration of the geofence. This geofence gets automatically
-//                                // removed after this period of time.
-//                        .setExpirationDuration(GEOFENCE_EXPIRATION_IN_MILLISECONDS)
-//
-//                                // Set the transition types of interest. Alerts are only generated for these
-//                                // transition. We track entry and exit transitions in this sample.
-//                        .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER |
-//                                Geofence.GEOFENCE_TRANSITION_DWELL | Geofence.GEOFENCE_TRANSITION_EXIT)
-//
-//                                // Create the geofence.
-//                        .build());
-//            }
         }
     }
 
