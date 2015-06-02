@@ -14,7 +14,17 @@ if (isset($_GET["latitude"]) && isset($_GET["longitude"])) {
     $latitude = $_GET['latitude'];
     $longitude = $_GET['longitude'];
     
-    $results = mysql_query("SELECT * FROM hazards");
+    $lat1 = $latitude - 1.00;
+    $lat2 = $latitude + 1.00;
+    $lon1 = $longitude - 1.00;
+    $lon2 = $longitude + 1.00;
+    
+    
+    $withinQuery = "SELECT * FROM hazards WHERE " . "(latitude BETWEEN ";
+    $withinQuery .= $lat1 . " AND " . $lat2 . ") "; 
+    $withinQuery .= "AND (longitude BETWEEN " . $lon1 . " AND " . $lon2 . ")"; 
+    
+    $results = mysql_query($withinQuery);
     
     if (!empty($results)) {
 	if (mysql_num_rows($results) > 0) {
