@@ -3,6 +3,7 @@ package com.tdkim.vsp.tester;
 import android.app.Activity;
 import android.app.PendingIntent;
 import android.app.ProgressDialog;
+import android.app.Application;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
 import android.content.Intent;
@@ -93,6 +94,12 @@ public class GooglePlayServicesActivity extends Activity implements
     public static final float GEOFENCE_RADIUS_IN_METERS = 50; // 1 mile, 1.6 km
 
     public ArrayList<HashMap<String, LatLng>> hazardList = new ArrayList<>();
+    
+    /* make these available in the GeofenceService */
+    /* encapsulate variables and create getters and setters */
+    public static ArrayList<HashMap<String, String>> geoList = new ArrayList<>();
+    public static LatLng lastKnownLocation;
+    public static string lastKnownDirection;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -115,8 +122,8 @@ public class GooglePlayServicesActivity extends Activity implements
             ex.printStackTrace();
         }
         populateGeofenceList();
-        Log.v(TAG, Integer.toString(hazardList.size()));
-        Log.v(TAG, mGeofenceList.get(0).getRequestId());
+        //Log.v(TAG, Integer.toString(hazardList.size()));
+        //Log.v(TAG, mGeofenceList.get(0).getRequestId());
         if (savedInstanceState != null) {
             mIsInResolution = savedInstanceState.getBoolean(KEY_IN_RESOLUTION, false);
         }
@@ -303,6 +310,7 @@ public class GooglePlayServicesActivity extends Activity implements
             final String TAG_TYPE = "type";
             final String TAG_LATITUDE = "latitude";
             final String TAG_LONGITUDE = "longitude";
+            final String TAG_DIRECTION = "direction";
             final String TAG_MESSAGE = "message";
 
             JSONArray hazards = null;
@@ -311,7 +319,8 @@ public class GooglePlayServicesActivity extends Activity implements
             //Log.v(TAG, "XXX");
 
             try {
-                URL url = new URL("http://api.tdkim.com/hazards.php?latitude=123&longitude=123");
+               /* change lat long to use user location */
+                URL url = new URL("http://api.tdkim.com/hazards.php?latitude=49&longitude=-122");
                 con = (HttpURLConnection) url.openConnection();
                 BufferedReader reader = null;
                 InputStream is = con.getInputStream();
@@ -339,10 +348,16 @@ public class GooglePlayServicesActivity extends Activity implements
                         String type = h.getString(TAG_TYPE);
                         Double lat = h.getDouble(TAG_LATITUDE);
                         Double lon = h.getDouble(TAG_LONGITUDE);
+                        /* see if compatible */
+                        char dir = h.getInt(TAG_DIRECTION);
+                        type = type + dir;
                         HashMap<String, LatLng> map = new HashMap<>();
-                        map.put(type, new LatLng(lat,lon));
+                        HashMap<String, String> geo = new HashMap<>();
+                        map.put(id, new LatLng(lat,lon));
+                        geo.put(id, type);
                         //Log.v(TAG, "FOUR");
                         hazardList.add(map);
+                        geoList.add(geo);
                         Log.v(TAG, type);
                     }
 
@@ -380,7 +395,8 @@ public class GooglePlayServicesActivity extends Activity implements
         if (hazardList.size() > 0) {
             for (int i = 0; i < hazardList.size(); i++){
                 //HashMap<String, LatLng> hazard = hazardList.get(i);
-                for (Map.Entry<String, LatLng> h : hazardList.get(i).entrySet()) {
+                for (Map.Entry<String, LatLng> h : hazardList.get(i).entrySet()) {          
+                  
                     mGeofenceList.add(new Geofence.Builder()
                             // Set the request ID of the geofence. This is a string to identify this
                             // geofence.
@@ -418,9 +434,41 @@ public class GooglePlayServicesActivity extends Activity implements
     }
 
     private void handleNewLocation(Location location) {
+        double lat;
+        double lon;
+        string direction;
+
         Log.v(TAG, location.toString());
+
+        lat = location.getLatitude();
+        lon = location.getLongitude();
+
+        if (lastKnownLocation.getLatitude() < lat) {
+            direction = "N";
+        }
+        else {
+            direction = "S";
+        }
+
+        if (lastKnownLocation.getLongitude() < lon) {
+            direction = direction + "E";
+        }
+        else {
+            direction = direction + "W";
+        }
+
+        lastKnownDirection = direction;
+        lastKnownLocation = new LatLng(lat,lon);
+
     }   //Connect to server, get input in DB around current loc.
 
+    private char calculateDirection(LatLng current, LatLng previous, HashMap<String, String> geoMap) {
+        
+        String id = geoMap.getKey();
+        String data = getMap.getValue();      
+        
+    }
+     
    /* private void getNewGeofences(Location location){
         //login
         //send lat/long

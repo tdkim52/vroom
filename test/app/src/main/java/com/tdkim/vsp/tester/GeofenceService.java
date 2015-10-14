@@ -8,6 +8,8 @@ import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.GeofencingEvent;
 import android.app.PendingIntent;
 import android.util.Log;
+
+import java.lang.String;
 import java.util.ArrayList;
 import java.util.List;
 import android.text.TextUtils;
@@ -38,6 +40,7 @@ public class GeofenceService extends IntentService {
             return;
         }
 
+        // get transition type
         int geofenceTransition = geofencingEvent.getGeofenceTransition();
 
         if ((geofenceTransition == Geofence.GEOFENCE_TRANSITION_ENTER) ||
@@ -53,7 +56,31 @@ public class GeofenceService extends IntentService {
             );
             // notification would go here
             Log.v(TAG, geofenceTransitionDetails);
+
+            // replace hashmap with passed in hashmap
+            String geoType;
             if (geofenceTransition == Geofence.GEOFENCE_TRANSITION_ENTER) {
+                for (Geofence geofence : triggeringGeofences.size()) {
+                    if ((geoType = GooglePlayServicesActivity.geoList.get(geofence.getRequestId())) != null) {
+                        char direction = geoType.charAt(geoType.length()-1);
+                        geoType = geoType.substring(0, geoType.length()-2);
+                        if (direction == 'N') {
+
+                        }
+                        else if (direction == 'E') {
+
+                        }
+                        else if (direction == 'S') {
+
+                        }
+                        else if (direction == 'W') {
+
+                        }
+                        else {
+
+                        }
+                    }
+                }
                 try {
                     MediaPlayer mp = MediaPlayer.create(this, com.tdkim.vsp.tester.R.raw.harzard);
                     mp.start();
