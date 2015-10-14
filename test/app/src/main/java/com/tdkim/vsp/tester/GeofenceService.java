@@ -61,31 +61,29 @@ public class GeofenceService extends IntentService {
             String geoType;
             if (geofenceTransition == Geofence.GEOFENCE_TRANSITION_ENTER) {
                 for (Geofence geofence : triggeringGeofences.size()) {
+		    /* replace with getter function once singleton */
                     if ((geoType = GooglePlayServicesActivity.geoList.get(geofence.getRequestId())) != null) {
                         char direction = geoType.charAt(geoType.length()-1);
                         geoType = geoType.substring(0, geoType.length()-2);
-                        if (direction == 'N') {
-
+                        if (direction == 'N' && GooglePlayServicesActivity.lastKnownDirection.charAt(0) == 'N') {
+			   				playHazardAlert(geoType);	   	   
                         }
-                        else if (direction == 'E') {
-
+                        else if (direction == 'E' && GooglePlayServicesActivity.lastKnownDirection.charAt(1) == 'E') {
+			    			playHazardAlert(geoType);	
                         }
-                        else if (direction == 'S') {
-
+                        else if (direction == 'S' && GooglePlayServicesActivity.lastKnownDirection.charAt(0) == 'S') {
+			   				playHazardAlert(geoType);
                         }
-                        else if (direction == 'W') {
-
+                        else if (direction == 'W' && GooglePlayServicesActivity.lastKnownDirection.charAt(1) == 'W') {
+			   				playHazardAlert(geoType);
                         }
                         else {
-
+						/* logical bug if direction is "null", change database to have X indicate no dir specified */
+ 							if (direction == 'X') {
+								playHazardAlert(geoType);
+						 	}
                         }
                     }
-                }
-                try {
-                    MediaPlayer mp = MediaPlayer.create(this, com.tdkim.vsp.tester.R.raw.harzard);
-                    mp.start();
-                } catch (Exception e) {
-                    Log.v(TAG, "Sound Error");
                 }
             }
 //            else if (geofenceTransition == Geofence.GEOFENCE_TRANSITION_EXIT){
@@ -111,6 +109,24 @@ public class GeofenceService extends IntentService {
             Log.v(TAG, "Error on geofence enter");
         }
     }
+
+	/*
+	 * playHazardAlert
+	 *
+	 * function plays the applicable sound clip notification
+     */	
+	/* xyzzy - eventually populate with audio library and allow functionality to output combination of clips */
+	private void playHazardAlert(string type) 
+		string filepath = "com.tdkim.vsp.tester.R.raw.";
+		filepath = filepath + type;		
+		
+		try {
+			MediaPlayer mp = MediaPlayer.create(this, filepath);
+			mp.start();
+		} catch (Exception e) {
+			Log.v(TAG, "Sound Playback Error");
+		}
+	}   
 
     private String getGeofenceTransitionDetails(
             Context context,
