@@ -1,7 +1,18 @@
 <?php
 //Connects to your Database 
-mysql_connect("localhost", "tdk_admin", "virtualsignpost") or die(mysql_error()); 
+$conn = mysql_connect("localhost", "tdk_admin", "admin") or die(mysql_error()); 
 mysql_select_db("tdk_vsp") or die(mysql_error()); 
+/*
+This is a php function to add to the database. it is called when the html form is submitted
+*/
+function add_to_database (){
+	$insertQuery = "INSERT INTO hazards (type, latitude, longitude, message) VALUES (";
+	$insertQuery .= $_POST['type_haz'] . ", " . $_POST['lat_text'] . ", " . $_POST['lng_text'] . ", " . $_POST['message'];
+	$insertQuery .= ")";
+	$adding_to = mysql_query($insertQuery) or die(mysql_error());
+	
+	mysqli_query($conn, $insertQuery);
+}
 
  //checks cookies to make sure they are logged in 
  if(isset($_COOKIE['ID_your_site'])){ 
@@ -9,6 +20,9 @@ mysql_select_db("tdk_vsp") or die(mysql_error());
  	$username = $_COOKIE['ID_your_site']; 
  	$pass = $_COOKIE['Key_your_site']; 
  	$check = mysql_query("SELECT * FROM users WHERE username = '$username'")or die(mysql_error()); 
+	
+	$hazards = array();
+
 
  	while($info = mysql_fetch_array( $check )){ 
 
@@ -18,6 +32,34 @@ mysql_select_db("tdk_vsp") or die(mysql_error());
  		}
 		//otherwise they are shown the admin area
 		else{
+			$retrieve = mysql_query("SELECT * FROM hazards")or die(mysql_error());
+			
+			//$test = "INSERT INTO hazards (type, latitude, longitude, message) VALUES ('traffic', '48.723245', '-122.488460', 'test point')";
+			//mysql_query($test);
+			
+			$i = 0;
+			$s = 1;
+			while ($row = mysql_fetch_array($retrieve, MYSQL_ASSOC)) {
+				$hazards [$i] = array($row['id'], $row['type'], $row['latitude'], $row['longitude'], $row['direction'], $row['message']);
+				$i++;
+			}
+			
+			if (isset($_POST['type_haz']) && isset($_POST['lat_text']) && isset($_POST['lng_text'])) {
+				$insertQuery = "INSERT INTO hazards (type, latitude, longitude, direction, message) VALUES ('";
+				$insertQuery .= $_POST['type_haz'] . "', '" . $_POST['lat_text'] . "', '" . $_POST['lng_text'] . "'";
+			if (isset($_POST['direction'])) {
+				$insertQuery .= ", '" . $_POST['direction'] . "'";
+			}
+			if (isset($_POST['message'])) {
+				$insertQuery .= ", '" . $_POST['message'] . "')";
+			}
+			else {
+				$insertQuery .= ")";
+			}
+			$result = mysql_query($insertQuery);
+			
+			}		
+			 
 			?>
 			<!DOCTYPE html>
 			<html>
@@ -41,23 +83,37 @@ mysql_select_db("tdk_vsp") or die(mysql_error());
 							zoom: 13,
 							mapTypeId: google.maps.MapTypeId.ROADMAP
 						}
+						//var hazards = <?php echo $hazards?>;
 						var map = new google.maps.Map(mapCanvas, mapOptions)
 						setMarkers(map, hazards);
 						google.maps.event.addListener(map, 'rightclick', function(event) {
-							placeMarker(event.latLng, map);
+								//placeMarker(event.latLng, map);
+
+								/* This is where we get the lat and long 
+								 * and trim them and update the form with the correct length
+								 */
 
 								document.getElementById('lat_text').value = event.latLng.lat();
 								document.getElementById('lng_text').value = event.latLng.lng();
-						});
-					}
+
+								var new_lat = document.getElementById('lat_text').value;
+								var trim_lat = new_lat.split(".");
+								var fin_lat = trim_lat[0] + "." + trim_lat[1].slice(0,6);  
+
+								document.getElementById('lat_text').value = fin_lat; 	
+
+								var new_lng = document.getElementById('lng_text').value;
+								var trim_lng = new_lng.split(".");
+								var fin_lng = trim_lng[0] + "." + trim_lng[1].slice(0,6);  
+
+								document.getElementById('lng_text').value = fin_lng; 	
+
 		
-					var hazards = [
-						['aggressive slackliners', 48.738779, -122.484702],
-						['construction, left lane blocked', 48.749091, -122.478098],
-						['seismic activity', 47.595163, -122.331655],
-						['collision', 47.617421,-122.201673],
-						['elephant asleep on path', -20.239326, 46.515856]
-					];
+						});
+
+					}
+					
+  					var hazards = <?php echo json_encode($hazards); ?>;
 		
 					var infowindow = new google.maps.InfoWindow();
 		
@@ -74,30 +130,35 @@ mysql_select_db("tdk_vsp") or die(mysql_error());
 					function setMarkers(map, locations) {
 						for (var i = 0; i < locations.length; i++) {
 							var hazard =  locations[i];
-							var myLatLng = new google.maps.LatLng(hazard[1], hazard[2]);
+							//var info = hazard[0] + "|" + hazard[1] + "|" + hazard[4] + "|" + hazard[5];
+							var myLatLng = new google.maps.LatLng(hazard[2], hazard[3]);
+							var contentString = '<div id="content">'+
+						      '<div id="siteNotice">'+
+						      '</div>'+
+						      '<h1 id="firstHeading" class="firstHeading">' + hazard[1] + '</h1>'+
+						      '<div id="bodyContent">'+
+						      '<p>Hazard ID:  ' + hazard[0] +
+						      '<br>Latitude:  ' + hazard[2] +
+						      '<br>Longitude: ' + hazard[3] +
+						      '<br>Direction: ' + hazard[4] +
+						      '<br>Message:   ' + hazard[5] + '</p>' +
+						      '<p><a href="http://vsp.tdkim.com/delete.php?id=' + hazard[0] +'">' +
+						      '<b>DELETE</a>' +
+						      '</div>'+
+						      '</div>';
 							var marker = new google.maps.Marker({
 								position: myLatLng,
 								map: map,
 								title: hazard[0]
 							});
-							google.maps.event.addListener(marker, 'click', (function(marker, i) {
+							google.maps.event.addListener(marker, 'click', (function(marker, contentString) {
 								return function() {
-									infowindow.setContent(locations[i][0]);
+									infowindow.setContent(contentString);
 									infowindow.open(map, marker);
+									document.getElementById('haz_id').value = marker.title;
 								}
-							})(marker, i));
+							})(marker, contentString));
 						}
-					}
-
-					function form2map (){
-						var hazard_drop_box = document.getElementById("type_haz");
-						var selected_hazard = hazard_drop_box.options[hazard_drop_box.seletedIndex].value;
-						var new_lat = document.getElementById('lat_text').value;
-						var new_lng = document.getElementById('lng_text').value;
-						var new_hazard = {selected_hazard, new_lat, new_lng};
-			
-						setMarkers(map,new_hazard);
-
 					}
 		
 					google.maps.event.addDomListener(window, 'load', initialize);
@@ -108,33 +169,51 @@ mysql_select_db("tdk_vsp") or die(mysql_error());
 				<body>
 				<div id="map-canvas" style="width: 60%; height: 70%"></div>
 
+<!-- NEW STUFF FOR DEMO this is the form that holds the info that will be submited.
+ when it is submitted the form will use the post method so that the php function
+ add_to_database can know what to send through the mysql query.-->
 				<aside>
-					Hazards<br>
-					<select id="type_haz" name="hazards_menu">
-					<option value="construction">construction</option>
-					<option value="black_ice">black ice</option>
-					<option value="car_accident">car accident</option>
-					</select> 
-
-
-					<form action="action_page.php">
-					Latitude:<br>
-					<input id="lat_text" type="text" name="lat_box">
-					<br>
-					Longitude:<br>
-					<input id="lng_text" type="text" name="lng_box">
-					<br><br>
-	
-					<textarea name ="message" cols="50" rows="5" maxlength="140">
-					</textarea>
-					<br>
-					<input type="submit" value="Submit" onclick="form2map();">
+					<form name = "haz_form" method="POST" action="submit.php">
+						Hazards<br>
+						<select id="type_haz" name="type_haz">
+						<option value="other">Other</option>
+						<option value="construction">Construction</option>
+						<option value="black_ice">Black Ice</option>
+						<option value="car_accident">Car Accident</option>
+						</select> 
+						<br>
+						Direction<br>
+						<select id="direction" name="direction">
+						<option value='X'>Not Applicable</option>
+						<option value='N'>North</option>
+						<option value='E'>East</option>
+						<option value='S'>South</option>
+						<option value='W'>West</option>
+						</select>
+						<br>
+						Latitude:<br>
+						<input id="lat_text" type="text" name="lat_text">
+						<br>
+						Longitude:<br>
+						<input id="lng_text" type="text" name="lng_text">
+						<br><br>
+						<textarea name ="message" cols="50" rows="5" maxlength="140"></textarea>
+						<br>
+						<input type="submit" value="Submit">
 					</form> 
+				</aside>
+				<aside>
+					<form name = "delete_form" method="POST" action="delete.php">
+						Hazard ID #<br>
+						<input id="haz_id" type="text" name="haz_id">
+						<br>
+						<input type="submit" value="Delete">
+					</form>
 				</aside>
 
 				</body>
 			</html>
-			<?	
+			<?		
  		}
 	}
 }

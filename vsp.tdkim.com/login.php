@@ -1,7 +1,7 @@
 <?php 
 
 //Connects to your Database 
-mysql_connect("localhost", "tdk_admin", "virtualsignpost") or die(mysql_error()); 
+mysql_connect("localhost", "tdk_admin", "admin") or die(mysql_error()); 
 mysql_select_db("tdk_vsp") or die(mysql_error()); 
 
 //Checks if there is a login cookie

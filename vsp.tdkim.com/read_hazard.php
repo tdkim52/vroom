@@ -38,6 +38,7 @@ if (isset($_GET["latitude"]) && isset($_GET["longitude"])) {
 		$hazard["type"] = $row["type"];
 		$hazard["latitude"] = $row["latitude"];
 		$hazard["longitude"] = $row["longitude"];
+		$hazard["direction"] = $row["direction"];
 		$hazard["message"] = $row["message"];
 		//$response["success"] = 1;
 		//$response["hazard"] = array();
