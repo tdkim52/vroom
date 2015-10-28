@@ -32,13 +32,9 @@ function add_to_database (){
  		}
 		//otherwise they are shown the admin area
 		else{
-			$retrieve = mysql_query("SELECT * FROM hazards")or die(mysql_error());
-			
-			//$test = "INSERT INTO hazards (type, latitude, longitude, message) VALUES ('traffic', '48.723245', '-122.488460', 'test point')";
-			//mysql_query($test);
-			
 			$i = 0;
 			$s = 1;
+			$retrieve = mysql_query("SELECT * FROM hazards")or die(mysql_error());
 			while ($row = mysql_fetch_array($retrieve, MYSQL_ASSOC)) {
 				$hazards [$i] = array($row['id'], $row['type'], $row['latitude'], $row['longitude'], $row['direction'], $row['message']);
 				$i++;
@@ -124,13 +120,26 @@ function add_to_database (){
 						});
 					}
 		
-
-			//test lat 48.75126561487703 and lng -122.4356031339111
-
 					function setMarkers(map, locations) {
 						for (var i = 0; i < locations.length; i++) {
 							var hazard =  locations[i];
-							//var info = hazard[0] + "|" + hazard[1] + "|" + hazard[4] + "|" + hazard[5];
+							var dir_icon;
+							switch (hazard[4]) {
+								case 'N':
+									dir_icon = 'images/north.png';
+									break;
+								case 'E':
+									dir_icon = 'images/east.png';
+									break;
+								case 'S':
+									dir_icon = 'images/south.png';
+									break;
+								case 'W':
+									dir_icon = 'images/west.png';
+									break;
+								default:
+									dir_icon = 'images/warning.png';
+							}
 							var myLatLng = new google.maps.LatLng(hazard[2], hazard[3]);
 							var contentString = '<div id="content">'+
 						      '<div id="siteNotice">'+
@@ -149,6 +158,7 @@ function add_to_database (){
 							var marker = new google.maps.Marker({
 								position: myLatLng,
 								map: map,
+								icon: dir_icon,
 								title: hazard[0]
 							});
 							google.maps.event.addListener(marker, 'click', (function(marker, contentString) {
@@ -169,9 +179,6 @@ function add_to_database (){
 				<body>
 				<div id="map-canvas" style="width: 60%; height: 70%"></div>
 
-<!-- NEW STUFF FOR DEMO this is the form that holds the info that will be submited.
- when it is submitted the form will use the post method so that the php function
- add_to_database can know what to send through the mysql query.-->
 				<aside>
 					<form name = "haz_form" method="POST" action="submit.php">
 						Hazards<br>

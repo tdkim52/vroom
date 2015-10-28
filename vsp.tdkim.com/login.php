@@ -67,11 +67,12 @@ else{
 // if they are not logged in 
 ?>
 
+ <center>
  <form action="<?php echo $_SERVER['PHP_SELF']?>" method="post"> 
 
  <table border="0"> 
 
- <tr><td colspan=2><h1>Login</h1></td></tr> 
+ <tr><td colspan=2><h1>VROOM | Vehicle Roadway Obstruction Online Management</h1></td></tr> 
 
  <tr><td>Username:</td><td> 
 
@@ -94,6 +95,7 @@ else{
  </table> 
 
  </form> 
+ </center>
 
  <?php 
  }
