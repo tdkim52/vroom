@@ -467,12 +467,4 @@ public class GooglePlayServicesActivity extends Activity implements
         lastKnownDirection = direction;
         lastKnownLocation = new LatLng(lat,lon);
     }
-     
-   /* private void getNewGeofences(Location location){
-        //login
-        //send lat/long
-        //get hazard message
-        //parse into array?
-        //return array
-    }*/
 }

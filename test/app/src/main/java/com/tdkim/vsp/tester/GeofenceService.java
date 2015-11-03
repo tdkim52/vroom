@@ -103,14 +103,18 @@ public class GeofenceService extends IntentService {
      */	
 	/* xyzzy - eventually populate with audio library and allow functionality to output combination of clips */
 	private void playHazardAlert(String type) {
-		String filepath = "com.tdkim.vsp.tester.R.raw.";
-		filepath = filepath + type;		
+        /* xyzzy - determine naming desired naming convention, for now do by type */
+		//String filepath = "com.tdkim.vsp.tester.R.raw.";
+		//filepath = filepath + type;
+
+        int resID = this.getResources().getIdentifier(type, "raw", this.getPackageName());
 
         /* xyzzy - create cannot accept a string as its second argument
          * need to build it as some sort of resource? or uri?
          */
 		try {
-			MediaPlayer mp = MediaPlayer.create(this, R.raw.hazard);
+			//MediaPlayer mp = MediaPlayer.create(this, R.raw.hazard);
+            MediaPlayer mp = MediaPlayer.create(this, resID);
 			mp.start();
 		} catch (Exception e) {
 			Log.v(TAG, "Sound Playback Error");
