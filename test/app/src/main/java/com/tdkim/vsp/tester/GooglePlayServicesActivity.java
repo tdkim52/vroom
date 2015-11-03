@@ -442,25 +442,26 @@ public class GooglePlayServicesActivity extends Activity implements
     private void handleNewLocation(Location location) {
         double lat;
         double lon;
-        String direction;
+        String direction = "X";
 
         Log.v(TAG, location.toString());
 
         lat = location.getLatitude();
         lon = location.getLongitude();
 
-        if (lastKnownLocation.latitude < lat) {
-            direction = "N";
-        }
-        else {
-            direction = "S";
-        }
+        if (lastKnownLocation != null) {
 
-        if (lastKnownLocation.longitude < lon) {
-            direction = direction + "E";
-        }
-        else {
-            direction = direction + "W";
+            if (lastKnownLocation.latitude < lat) {
+                direction = "N";
+            } else {
+                direction = "S";
+            }
+
+            if (lastKnownLocation.longitude < lon) {
+                direction = direction + "E";
+            } else {
+                direction = direction + "W";
+            }
         }
 
         lastKnownDirection = direction;
