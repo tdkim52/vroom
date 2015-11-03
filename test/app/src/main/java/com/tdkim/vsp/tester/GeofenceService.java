@@ -11,6 +11,7 @@ import android.util.Log;
 
 import java.lang.String;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import android.text.TextUtils;
 import android.media.*;
@@ -60,50 +61,35 @@ public class GeofenceService extends IntentService {
             // replace hashmap with passed in hashmap
             String geoType;
             if (geofenceTransition == Geofence.GEOFENCE_TRANSITION_ENTER) {
-                for (Geofence geofence : triggeringGeofences.size()) {
-		    /* replace with getter function once singleton */
-                    if ((geoType = GooglePlayServicesActivity.geoList.get(geofence.getRequestId())) != null) {
-                        char direction = geoType.charAt(geoType.length()-1);
-                        geoType = geoType.substring(0, geoType.length()-2);
-                        if (direction == 'N' && GooglePlayServicesActivity.lastKnownDirection.charAt(0) == 'N') {
-			   				playHazardAlert(geoType);	   	   
-                        }
-                        else if (direction == 'E' && GooglePlayServicesActivity.lastKnownDirection.charAt(1) == 'E') {
-			    			playHazardAlert(geoType);	
-                        }
-                        else if (direction == 'S' && GooglePlayServicesActivity.lastKnownDirection.charAt(0) == 'S') {
-			   				playHazardAlert(geoType);
-                        }
-                        else if (direction == 'W' && GooglePlayServicesActivity.lastKnownDirection.charAt(1) == 'W') {
-			   				playHazardAlert(geoType);
-                        }
-                        else {
+                for (Geofence geofence : triggeringGeofences) {
+		            /* replace with getter function once singleton */
+                    /* xyzzy - poor implementation, no need to run at O(N^2), currently uses unique hashmap for each key */
+                    for (HashMap<String, String> hazard : GooglePlayServicesActivity.geoList) {
+                        if ((geoType = hazard.get(geofence.getRequestId())) != null) {
+                            char direction = geoType.charAt(geoType.length()-1);
+                            geoType = geoType.substring(0, geoType.length()-2);
+                            if (direction == 'N' && GooglePlayServicesActivity.lastKnownDirection.charAt(0) == 'N') {
+                                playHazardAlert(geoType);
+                            }
+                            else if (direction == 'E' && GooglePlayServicesActivity.lastKnownDirection.charAt(1) == 'E') {
+                                playHazardAlert(geoType);
+                            }
+                            else if (direction == 'S' && GooglePlayServicesActivity.lastKnownDirection.charAt(0) == 'S') {
+                                playHazardAlert(geoType);
+                            }
+                            else if (direction == 'W' && GooglePlayServicesActivity.lastKnownDirection.charAt(1) == 'W') {
+                                playHazardAlert(geoType);
+                            }
+                            else {
 						/* logical bug if direction is "null", change database to have X indicate no dir specified */
- 							if (direction == 'X') {
-								playHazardAlert(geoType);
-						 	}
+                                if (direction == 'X') {
+                                    playHazardAlert(geoType);
+                                }
+                            }
                         }
                     }
                 }
             }
-//            else if (geofenceTransition == Geofence.GEOFENCE_TRANSITION_EXIT){
-//                try {
-//                    Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE);
-//                    Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), notification);
-//                    r.play();
-//                } catch (Exception e) {
-//                    Log.v(TAG, "Sound Error");
-//                }
-//            }
-//            else if (geofenceTransition == Geofence.GEOFENCE_TRANSITION_DWELL){
-//                try {
-//                    Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
-//                    Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), notification);
-//                    r.play();
-//                } catch (Exception e) {
-//                    Log.v(TAG, "Sound Error");
-//                }
-//            }
         }
         else {
             Log.v(TAG, "Error on geofence enter");
@@ -116,12 +102,15 @@ public class GeofenceService extends IntentService {
 	 * function plays the applicable sound clip notification
      */	
 	/* xyzzy - eventually populate with audio library and allow functionality to output combination of clips */
-	private void playHazardAlert(string type) 
-		string filepath = "com.tdkim.vsp.tester.R.raw.";
+	private void playHazardAlert(String type) {
+		String filepath = "com.tdkim.vsp.tester.R.raw.";
 		filepath = filepath + type;		
-		
+
+        /* xyzzy - create cannot accept a string as its second argument
+         * need to build it as some sort of resource? or uri?
+         */
 		try {
-			MediaPlayer mp = MediaPlayer.create(this, filepath);
+			MediaPlayer mp = MediaPlayer.create(this, R.raw.hazard);
 			mp.start();
 		} catch (Exception e) {
 			Log.v(TAG, "Sound Playback Error");
@@ -135,7 +124,7 @@ public class GeofenceService extends IntentService {
 
         String geofenceTransitionString = getTransitionString(geofenceTransition);
 
-        ArrayList triggerGeofencesIdsList =  new ArrayList();
+        ArrayList<String> triggerGeofencesIdsList =  new ArrayList<>();
         for (Geofence geofence : triggeringGeofences) {
             triggerGeofencesIdsList.add(geofence.getRequestId());
         }

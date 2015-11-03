@@ -55,7 +55,7 @@ public class GooglePlayServicesActivity extends Activity implements
         GoogleApiClient.OnConnectionFailedListener,
         LocationListener {
 
-    private static final String TAG = "GooglePlayServicesActivity";
+    private static final String TAG = "GPSActivity";
 
     private static final String KEY_IN_RESOLUTION = "is_in_resolution";
 
@@ -91,7 +91,7 @@ public class GooglePlayServicesActivity extends Activity implements
     public static final long GEOFENCE_EXPIRATION_IN_HOURS = 12;
     public static final long GEOFENCE_EXPIRATION_IN_MILLISECONDS =
             GEOFENCE_EXPIRATION_IN_HOURS * 60 * 60 * 1000; // 12 hours
-    public static final float GEOFENCE_RADIUS_IN_METERS = 50; // 1 mile, 1.6 km
+    public static final float GEOFENCE_RADIUS_IN_METERS = 50;
 
     public ArrayList<HashMap<String, LatLng>> hazardList = new ArrayList<>();
     
@@ -99,7 +99,7 @@ public class GooglePlayServicesActivity extends Activity implements
     /* encapsulate variables and create getters and setters */
     public static ArrayList<HashMap<String, String>> geoList = new ArrayList<>();
     public static LatLng lastKnownLocation;
-    public static string lastKnownDirection;
+    public static String lastKnownDirection;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -348,8 +348,8 @@ public class GooglePlayServicesActivity extends Activity implements
                         String type = h.getString(TAG_TYPE);
                         Double lat = h.getDouble(TAG_LATITUDE);
                         Double lon = h.getDouble(TAG_LONGITUDE);
-                        /* see if compatible */
-                        char dir = h.getInt(TAG_DIRECTION);
+                        /* xyzzy - make sure proper conversion is happening */
+                        char dir = (char)h.getInt(TAG_DIRECTION);
                         type = type + dir;
                         HashMap<String, LatLng> map = new HashMap<>();
                         HashMap<String, String> geo = new HashMap<>();
@@ -436,21 +436,21 @@ public class GooglePlayServicesActivity extends Activity implements
     private void handleNewLocation(Location location) {
         double lat;
         double lon;
-        string direction;
+        String direction;
 
         Log.v(TAG, location.toString());
 
         lat = location.getLatitude();
         lon = location.getLongitude();
 
-        if (lastKnownLocation.getLatitude() < lat) {
+        if (lastKnownLocation.latitude < lat) {
             direction = "N";
         }
         else {
             direction = "S";
         }
 
-        if (lastKnownLocation.getLongitude() < lon) {
+        if (lastKnownLocation.longitude < lon) {
             direction = direction + "E";
         }
         else {
@@ -459,14 +459,6 @@ public class GooglePlayServicesActivity extends Activity implements
 
         lastKnownDirection = direction;
         lastKnownLocation = new LatLng(lat,lon);
-
-    }   //Connect to server, get input in DB around current loc.
-
-    private char calculateDirection(LatLng current, LatLng previous, HashMap<String, String> geoMap) {
-        
-        String id = geoMap.getKey();
-        String data = getMap.getValue();      
-        
     }
      
    /* private void getNewGeofences(Location location){
