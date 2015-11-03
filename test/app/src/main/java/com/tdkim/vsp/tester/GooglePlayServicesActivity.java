@@ -364,7 +364,6 @@ public class GooglePlayServicesActivity extends Activity implements
                         //Log.v(TAG, "FOUR");
                         hazardList.add(map);
                         geoList.add(geo);
-                        Log.v(TAG, type);
                     }
 
                 }

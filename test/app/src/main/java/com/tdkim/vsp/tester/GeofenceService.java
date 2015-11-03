@@ -113,8 +113,13 @@ public class GeofenceService extends IntentService {
          * need to build it as some sort of resource? or uri?
          */
 		try {
-			//MediaPlayer mp = MediaPlayer.create(this, R.raw.hazard);
-            MediaPlayer mp = MediaPlayer.create(this, resID);
+            MediaPlayer mp;
+            if (resID == 0) {
+                mp = MediaPlayer.create(this, R.raw.other);
+            }
+            else {
+                mp = MediaPlayer.create(this, resID);
+            }
 			mp.start();
 		} catch (Exception e) {
 			Log.v(TAG, "Sound Playback Error");
