@@ -81,7 +81,7 @@ public class GeofenceService extends IntentService {
                                 playHazardAlert(geoType);
                             }
                             else {
-						/* logical bug if direction is "null", change database to have X indicate no dir specified */
+						    /* logical bug if direction is "null", change database to have X indicate no dir specified */
                                 if (direction == 'X') {
                                     playHazardAlert(geoType);
                                 }

@@ -304,7 +304,7 @@ public class GooglePlayServicesActivity extends Activity implements
             //hazardList = null;
             //JSONParser jsonParser = new JSONParser();
             String url_AllHazards = "http://api.tdkim.com/hazards.php";
-            final String TAG_SUCESS = "success";
+            final String TAG_SUCCESS = "success";
             final String TAG_HAZARD = "hazard";
             final String TAG_ID = "id";
             final String TAG_TYPE = "type";
@@ -319,7 +319,7 @@ public class GooglePlayServicesActivity extends Activity implements
             //Log.v(TAG, "XXX");
 
             try {
-               /* change lat long to use user location */
+               /* xyzzy - change lat long to use user location */
                 URL url = new URL("http://api.tdkim.com/hazards.php?latitude=49&longitude=-122");
                 con = (HttpURLConnection) url.openConnection();
                 BufferedReader reader = null;
@@ -337,7 +337,7 @@ public class GooglePlayServicesActivity extends Activity implements
                 result = sb.toString();
                 //Log.v(TAG, "ONE");
                 JSONObject json = new JSONObject(result);
-                int success = json.getInt(TAG_SUCESS);
+                int success = json.getInt(TAG_SUCCESS);
                 if (success == 1) {
                     //Log.v(TAG, "TWO");
                     hazards = json.getJSONArray(TAG_HAZARD);
@@ -349,7 +349,13 @@ public class GooglePlayServicesActivity extends Activity implements
                         Double lat = h.getDouble(TAG_LATITUDE);
                         Double lon = h.getDouble(TAG_LONGITUDE);
                         /* xyzzy - make sure proper conversion is happening */
-                        char dir = (char)h.getInt(TAG_DIRECTION);
+                        char dir;
+                        if (h.isNull(TAG_DIRECTION)) {
+                            dir = 'X';
+                        }
+                        else {
+                            dir = h.getString(TAG_DIRECTION).charAt(0);
+                        }
                         type = type + dir;
                         HashMap<String, LatLng> map = new HashMap<>();
                         HashMap<String, String> geo = new HashMap<>();
