@@ -101,12 +101,13 @@ public class GooglePlayServicesActivity extends Activity implements
     public static LatLng lastKnownLocation;
     public static String lastKnownDirection;
 
+    /* xyzzy - unoptimal, used for testing purposes */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         mLocationRequest = LocationRequest.create()
                 .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
-                .setInterval(10 * 1000)
-                .setFastestInterval(5 * 1000);
+                .setInterval(5 * 1000)
+                .setFastestInterval(1 * 1000);
         super.onCreate(savedInstanceState);
 
         mGeofenceList = new ArrayList<Geofence>();
@@ -320,30 +321,24 @@ public class GooglePlayServicesActivity extends Activity implements
 
             try {
                /* xyzzy - change lat long to use user location */
-                URL url = new URL("http://api.tdkim.com/hazards.php?latitude=49&longitude=-122");
-                //URL url = new URL("http://api.tdkim.com/hazards.php?latitude=47&longitude=-122");
+                URL url = new URL("http://api.tdkim.com/hazards.php?latitude=49&longitude=-122"); // bellingham
+                //URL url = new URL("http://api.tdkim.com/hazards.php?latitude=47&longitude=-122"); // seattle
                 con = (HttpURLConnection) url.openConnection();
                 BufferedReader reader = null;
                 InputStream is = con.getInputStream();
-                //Log.v(TAG, "VVV");
                 InputStreamReader isr = new InputStreamReader(is);
-                //Log.v(TAG, "RRR");
                 reader = new BufferedReader(isr);
                 StringBuilder sb = new StringBuilder();
                 String line = "";
-                //Log.v(TAG, "OOO");
                 while ((line = reader.readLine()) != null) {
                     sb.append(line + "\n");
                 }
                 result = sb.toString();
-                //Log.v(TAG, "ONE");
                 JSONObject json = new JSONObject(result);
                 int success = json.getInt(TAG_SUCCESS);
                 if (success == 1) {
-                    //Log.v(TAG, "TWO");
                     hazards = json.getJSONArray(TAG_HAZARD);
                     for (int i = 0; i < hazards.length(); i++) {
-                        //Log.v(TAG, "THREE");
                         JSONObject h = hazards.getJSONObject(i);
                         String id = h.getString(TAG_ID);
                         String type = h.getString(TAG_TYPE);
@@ -362,7 +357,6 @@ public class GooglePlayServicesActivity extends Activity implements
                         HashMap<String, String> geo = new HashMap<>();
                         map.put(id, new LatLng(lat,lon));
                         geo.put(id, type);
-                        //Log.v(TAG, "FOUR");
                         hazardList.add(map);
                         geoList.add(geo);
                     }
@@ -374,14 +368,12 @@ public class GooglePlayServicesActivity extends Activity implements
                 }
             }
             catch (Exception ex) {
-                //Log.v(TAG, ex.getMessage());
                 ex.printStackTrace();
             }
             finally {
                 con.disconnect();
             }
             return null;
-            //return hazardList;
         }
 
         protected void onPostExecute(String url) {
@@ -390,13 +382,7 @@ public class GooglePlayServicesActivity extends Activity implements
     }
 
     public void populateGeofenceList() {
-//        HashMap<String, LatLng> hazards = new HashMap<String, LatLng>();
-//        hazards.put("Stairs", new LatLng(48.733343,-122.486056));
-//        hazards.put("AW", new LatLng(48.732528, -122.486627));
-//        hazards.put("Triangle", new LatLng(48.734944, -122.485932));
-
-        //new LoadAllHazards().execute();
-
+        
         //ArrayList<HashMap<String, LatLng>> hazardList = getHazards();
         if (hazardList.size() > 0) {
             for (int i = 0; i < hazardList.size(); i++){
