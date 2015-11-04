@@ -67,7 +67,9 @@ public class GeofenceService extends IntentService {
                     for (HashMap<String, String> hazard : GooglePlayServicesActivity.geoList) {
                         if ((geoType = hazard.get(geofence.getRequestId())) != null) {
                             char direction = geoType.charAt(geoType.length()-1);
-                            geoType = geoType.substring(0, geoType.length()-2);
+                            geoType = geoType.substring(0, geoType.length()-1);
+                            Log.v(TAG, String.valueOf(direction));
+                            Log.v(TAG, geoType);
                             if (direction == 'N' && GooglePlayServicesActivity.lastKnownDirection.charAt(0) == 'N') {
                                 playHazardAlert(geoType);
                             }
@@ -109,18 +111,28 @@ public class GeofenceService extends IntentService {
 
         int resID = this.getResources().getIdentifier(type, "raw", this.getPackageName());
 
+        if (resID == 0) {
+            resID = this.getResources().getIdentifier("hazard", "raw", this.getPackageName());
+        }
+        Log.v(TAG, Integer.toString(resID));
+
         /* xyzzy - create cannot accept a string as its second argument
          * need to build it as some sort of resource? or uri?
          */
+
 		try {
             MediaPlayer mp;
-            if (resID == 0) {
-                mp = MediaPlayer.create(this, R.raw.other);
-            }
-            else {
                 mp = MediaPlayer.create(this, resID);
-            }
-			mp.start();
+                mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                    @Override
+                    public void onCompletion(MediaPlayer mp) {
+                        // TODO Auto-generated method stub
+                        mp.reset();
+                        mp.release();
+                        mp=null;
+                    }
+                });
+            mp.start();
 		} catch (Exception e) {
 			Log.v(TAG, "Sound Playback Error");
 		}

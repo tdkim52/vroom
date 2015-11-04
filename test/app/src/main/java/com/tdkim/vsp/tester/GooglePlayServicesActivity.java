@@ -91,7 +91,7 @@ public class GooglePlayServicesActivity extends Activity implements
     public static final long GEOFENCE_EXPIRATION_IN_HOURS = 12;
     public static final long GEOFENCE_EXPIRATION_IN_MILLISECONDS =
             GEOFENCE_EXPIRATION_IN_HOURS * 60 * 60 * 1000; // 12 hours
-    public static final float GEOFENCE_RADIUS_IN_METERS = 50;
+    public static final float GEOFENCE_RADIUS_IN_METERS = 25;
 
     public ArrayList<HashMap<String, LatLng>> hazardList = new ArrayList<>();
     
@@ -321,6 +321,7 @@ public class GooglePlayServicesActivity extends Activity implements
             try {
                /* xyzzy - change lat long to use user location */
                 URL url = new URL("http://api.tdkim.com/hazards.php?latitude=49&longitude=-122");
+                //URL url = new URL("http://api.tdkim.com/hazards.php?latitude=47&longitude=-122");
                 con = (HttpURLConnection) url.openConnection();
                 BufferedReader reader = null;
                 InputStream is = con.getInputStream();

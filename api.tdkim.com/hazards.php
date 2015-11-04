@@ -16,10 +16,10 @@ if (isset($_GET["latitude"]) && isset($_GET["longitude"])) {
     $latitude = $_GET['latitude'];
     $longitude = $_GET['longitude'];
     
-    $lat1 = $latitude - 1.00;
-    $lat2 = $latitude + 1.00;
-    $lon1 = $longitude - 1.00;
-    $lon2 = $longitude + 1.00;
+    $lat1 = $latitude - 3.00;
+    $lat2 = $latitude + 3.00;
+    $lon1 = $longitude - 3.00;
+    $lon2 = $longitude + 3.00;
     
     $withinQuery = "SELECT * FROM hazards WHERE " . "(latitude BETWEEN ";
     $withinQuery .= $lat1 . " AND " . $lat2 . ") "; 
