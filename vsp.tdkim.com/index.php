@@ -1,7 +1,7 @@
 <?php
-//Connects to your Database 
-$conn = mysql_connect("localhost", "tdk_admin", "admin") or die(mysql_error()); 
-mysql_select_db("tdk_vsp") or die(mysql_error()); 
+//Connects to your Database
+$conn = mysql_connect("localhost", "tdk_admin", "admin") or die(mysql_error());
+mysql_select_db("tdk_vsp") or die(mysql_error());
 /*
 This is a php function to add to the database. it is called when the html form is submitted
 */
@@ -10,25 +10,25 @@ function add_to_database (){
 	$insertQuery .= $_POST['type_haz'] . ", " . $_POST['lat_text'] . ", " . $_POST['lng_text'] . ", " . $_POST['message'];
 	$insertQuery .= ")";
 	$adding_to = mysql_query($insertQuery) or die(mysql_error());
-	
+
 	mysqli_query($conn, $insertQuery);
 }
 
- //checks cookies to make sure they are logged in 
- if(isset($_COOKIE['ID_your_site'])){ 
+ //checks cookies to make sure they are logged in
+ if(isset($_COOKIE['ID_your_site'])){
 
- 	$username = $_COOKIE['ID_your_site']; 
- 	$pass = $_COOKIE['Key_your_site']; 
- 	$check = mysql_query("SELECT * FROM users WHERE username = '$username'")or die(mysql_error()); 
-	
+ 	$username = $_COOKIE['ID_your_site'];
+ 	$pass = $_COOKIE['Key_your_site'];
+ 	$check = mysql_query("SELECT * FROM users WHERE username = '$username'")or die(mysql_error());
+
 	$hazards = array();
 
 
- 	while($info = mysql_fetch_array( $check )){ 
+ 	while($info = mysql_fetch_array( $check )){
 
-		//if the cookie has the wrong password, they are taken to the login page 
+		//if the cookie has the wrong password, they are taken to the login page
  		if ($pass != $info['password']){
-			header("Location: login.php"); 
+			header("Location: login.php");
  		}
 		//otherwise they are shown the admin area
 		else{
@@ -39,7 +39,7 @@ function add_to_database (){
 				$hazards [$i] = array($row['id'], $row['type'], $row['latitude'], $row['longitude'], $row['direction'], $row['message']);
 				$i++;
 			}
-			
+
 			if (isset($_POST['type_haz']) && isset($_POST['lat_text']) && isset($_POST['lng_text'])) {
 				$insertQuery = "INSERT INTO hazards (type, latitude, longitude, direction, message) VALUES ('";
 				$insertQuery .= $_POST['type_haz'] . "', '" . $_POST['lat_text'] . "', '" . $_POST['lng_text'] . "'";
@@ -53,9 +53,9 @@ function add_to_database (){
 				$insertQuery .= ")";
 			}
 			$result = mysql_query($insertQuery);
-			
-			}		
-			 
+
+			}
+
 			?>
 			<!DOCTYPE html>
 			<html>
@@ -65,10 +65,19 @@ function add_to_database (){
 				html { height: 100% }
 				body { height: 100%; margin: 0; padding: 0 }
 				#map-canvas {
-				width: 75%;
+				width: 65%;
 				height: 100%;
+				float: left;
 					background-color: #CCC;
 				}
+
+				#form{
+					width: 35%;
+					height: 100%;
+					float: right;
+				}
+
+
 				</style>
 				<script src="https://maps.googleapis.com/maps/api/js"></script>
 				<script>
@@ -83,9 +92,9 @@ function add_to_database (){
 						var map = new google.maps.Map(mapCanvas, mapOptions)
 						setMarkers(map, hazards);
 						google.maps.event.addListener(map, 'rightclick', function(event) {
-								//placeMarker(event.latLng, map);
+								placeMarker(event.latLng, map);
 
-								/* This is where we get the lat and long 
+								/* This is where we get the lat and long
 								 * and trim them and update the form with the correct length
 								 */
 
@@ -94,32 +103,38 @@ function add_to_database (){
 
 								var new_lat = document.getElementById('lat_text').value;
 								var trim_lat = new_lat.split(".");
-								var fin_lat = trim_lat[0] + "." + trim_lat[1].slice(0,6);  
+								var fin_lat = trim_lat[0] + "." + trim_lat[1].slice(0,6);
 
-								document.getElementById('lat_text').value = fin_lat; 	
+								document.getElementById('lat_text').value = fin_lat;
 
 								var new_lng = document.getElementById('lng_text').value;
 								var trim_lng = new_lng.split(".");
-								var fin_lng = trim_lng[0] + "." + trim_lng[1].slice(0,6);  
+								var fin_lng = trim_lng[0] + "." + trim_lng[1].slice(0,6);
 
-								document.getElementById('lng_text').value = fin_lng; 	
+								document.getElementById('lng_text').value = fin_lng;
 
-		
+
 						});
 
 					}
-					
+
   					var hazards = <?php echo json_encode($hazards); ?>;
-		
+
 					var infowindow = new google.maps.InfoWindow();
-		
+
+					var pin;
+
 					function placeMarker(location, map) {
-						var pin = new google.maps.Marker({
-							position: location,
-							map: map
-						});
+						if ( pin ) {
+					    pin.setPosition(location);
+					  } else {
+					    pin = new google.maps.Marker({
+					      position: location,
+					      map: map
+					    });
+					  }
 					}
-		
+
 					function setMarkers(map, locations) {
 						for (var i = 0; i < locations.length; i++) {
 							var hazard =  locations[i];
@@ -170,14 +185,18 @@ function add_to_database (){
 							})(marker, contentString));
 						}
 					}
-		
+
 					google.maps.event.addDomListener(window, 'load', initialize);
 
 				</script>
 
 				</head>
 				<body>
+
+
 				<div id="map-canvas" style="width: 60%; height: 70%"></div>
+
+				<div id="form">
 
 				<aside>
 					<form name = "haz_form" method="POST" action="submit.php">
@@ -187,7 +206,7 @@ function add_to_database (){
 						<option value="construction">Construction</option>
 						<option value="black_ice">Black Ice</option>
 						<option value="car_accident">Car Accident</option>
-						</select> 
+						</select>
 						<br>
 						Direction<br>
 						<select id="direction" name="direction">
@@ -203,11 +222,14 @@ function add_to_database (){
 						<br>
 						Longitude:<br>
 						<input id="lng_text" type="text" name="lng_text">
+						<br>
+						Length of incident:<br>
+						<input id="time_text" type="text" name="time_text">
 						<br><br>
 						<textarea name ="message" cols="50" rows="5" maxlength="140"></textarea>
 						<br>
 						<input type="submit" value="Submit">
-					</form> 
+					</form>
 				</aside>
 				<aside>
 					<form name = "delete_form" method="POST" action="delete.php">
@@ -218,14 +240,16 @@ function add_to_database (){
 					</form>
 				</aside>
 
+			</div>
+
 				</body>
 			</html>
-			<?		
+			<?
  		}
 	}
 }
 
- else{ //if the cookie does not exist, they are taken to the login screen 
-	header("Location: login.php"); 
+ else{ //if the cookie does not exist, they are taken to the login screen
+	header("Location: login.php");
  }
  ?>
