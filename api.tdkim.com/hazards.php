@@ -57,7 +57,7 @@ if (isset($_GET["latitude"]) && isset($_GET["longitude"])) {
 	    echo json_encode($response);
     }
 }
-elseif (isset($_GET["all"]) {
+elseif (isset($_GET["all"])) {
     $allQuery = "SELECT * FROM hazards";
     $results = mysql_query($allQuery);
     
