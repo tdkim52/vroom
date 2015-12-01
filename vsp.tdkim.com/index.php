@@ -36,7 +36,7 @@ function add_to_database (){
 			$s = 1;
 			$retrieve = mysql_query("SELECT * FROM hazards")or die(mysql_error());
 			while ($row = mysql_fetch_array($retrieve, MYSQL_ASSOC)) {
-				$hazards [$i] = array($row['id'], $row['type'], $row['latitude'], $row['longitude'], $row['direction'], $row['message']);
+				$hazards [$i] = array($row['id'], $row['type'], $row['latitude'], $row['longitude'], $row['direction'], $row['message'], $row['timestamp'], $row['expiration']);
 				$i++;
 			}
 
@@ -161,11 +161,13 @@ function add_to_database (){
 						      '</div>'+
 						      '<h1 id="firstHeading" class="firstHeading">' + hazard[1] + '</h1>'+
 						      '<div id="bodyContent">'+
-						      '<p>Hazard ID:  ' + hazard[0] +
-						      '<br>Latitude:  ' + hazard[2] +
-						      '<br>Longitude: ' + hazard[3] +
-						      '<br>Direction: ' + hazard[4] +
-						      '<br>Message:   ' + hazard[5] + '</p>' +
+						      '<p>Hazard ID:   ' + hazard[0] +
+						      '<br>Latitude:   ' + hazard[2] +
+						      '<br>Longitude:  ' + hazard[3] +
+						      '<br>Direction:  ' + hazard[4] +
+						      '<br>Message:    ' + hazard[5] +
+						      '<br>Timestamp:  ' + hazard[6] +
+						      '<br>Expiration: ' + hazard[7] + '</p>' +
 						      '<p><a href="http://vsp.tdkim.com/delete.php?id=' + hazard[0] +'">' +
 						      '<b>DELETE</a>' +
 						      '</div>'+
@@ -223,7 +225,7 @@ function add_to_database (){
 						Longitude:<br>
 						<input id="lng_text" type="text" name="lng_text">
 						<br>
-						Length of incident:<br>
+						Hazard Duration (hours):<br>
 						<input id="time_text" type="text" name="time_text">
 						<br><br>
 						<textarea name ="message" cols="50" rows="5" maxlength="140"></textarea>
