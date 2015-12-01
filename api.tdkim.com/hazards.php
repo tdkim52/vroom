@@ -63,7 +63,7 @@ elseif (isset($_GET["all"])) {
     
     if (!empty($results)) {
         if(mysql_num_rows($results) > 0) {
-            $response["hazard" = array();
+            $response["hazard"] = array();
             while ($row = mysql_fetch_array($results)) {
                 $hazard = array();
                 $hazard["id"] = $row["id"];
@@ -72,7 +72,7 @@ elseif (isset($_GET["all"])) {
                 $hazard["longitude"] = $row["longitude"];
                 $hazard["direction"] = $row["direction"];
                 $hazard["message"] = $row["message"];
-                array_push($reponse["hazard"], $hazard);
+                array_push($response["hazard"], $hazard);
             }
             $response["success"] = 1;
             echo json_encode($response);
