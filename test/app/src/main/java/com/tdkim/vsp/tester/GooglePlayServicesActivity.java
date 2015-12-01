@@ -31,6 +31,7 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.lang.StringBuilder;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
@@ -321,7 +322,21 @@ public class GooglePlayServicesActivity extends Activity implements
 
             try {
                /* xyzzy - change lat long to use user location */
-                URL url = new URL("http://api.tdkim.com/hazards.php?latitude=49&longitude=-122"); // bellingham
+                if (lastKnownLocation == null) {
+                    URL url = new URL("http://api.tdkim.com/hazards.php?all");
+                }
+                else {
+                    Double tmpLat = lastKnownLocation.latitude;
+                    Double tmpLon = lastKnownLocation.longitude;
+
+                    StringBuilder tmpUrl = new StringBuilder();
+                    tmpUrl.append("http://api.tdkim.com/hazards.php?latitude=");
+                    tmpUrl.append(tmpLat);
+                    tmpUrl.append("&longitude=");
+                    tmpUrl.append(tmpLon);
+                    URL url = new URL(tmpUrl);
+                }
+                //URL url = new URL("http://api.tdkim.com/hazards.php?latitude=49&longitude=-122"); // bellingham
                 //URL url = new URL("http://api.tdkim.com/hazards.php?latitude=47&longitude=-122"); // seattle
                 con = (HttpURLConnection) url.openConnection();
                 BufferedReader reader = null;
