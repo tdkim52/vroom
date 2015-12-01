@@ -25,41 +25,68 @@ if (isset($_GET["latitude"]) && isset($_GET["longitude"])) {
     $withinQuery .= $lat1 . " AND " . $lat2 . ") "; 
     $withinQuery .= "AND (longitude BETWEEN " . $lon1 . " AND " . $lon2 . ")";
     
-    //echo $withinQuery;
-    
     $results = mysql_query($withinQuery);
     
     if (!empty($results)) {
-	if (mysql_num_rows($results) > 0) {
-	    //$results = mysql_fetch_array($results);
+	    if (mysql_num_rows($results) > 0) { 
 	    
-	    $response["hazard"] = array();
+	        $response["hazard"] = array();
 	    
-	    while ($row = mysql_fetch_array($results)) {
-		$hazard = array();
-		$hazard["id"] = $row["id"];
-		$hazard["type"] = $row["type"];
-		$hazard["latitude"] = $row["latitude"];
-		$hazard["longitude"] = $row["longitude"];
-		$hazard["direction"] = $row["direction"];
-		$hazard["message"] = $row["message"];
-		//$response["success"] = 1;
-		//$response["hazard"] = array();
-		array_push($response["hazard"], $hazard);
-	    }
-	    $response["success"] = 1;
-	    echo json_encode($response);
-	}
-	else {
-	    $response["success"] = 0;
-	    $response["error"] = "No hazards in range";
-	    echo json_encode($response);
-	}
+	        while ($row = mysql_fetch_array($results)) {
+	    	    $hazard = array();
+	    	    $hazard["id"] = $row["id"];
+	    	    $hazard["type"] = $row["type"];
+	    	    $hazard["latitude"] = $row["latitude"];
+	    	    $hazard["longitude"] = $row["longitude"];
+	    	    $hazard["direction"] = $row["direction"];
+	    	    $hazard["message"] = $row["message"];    
+	    	    array_push($response["hazard"], $hazard);
+	        }
+	        $response["success"] = 1;
+	        echo json_encode($response);
+    	}      
+	    else {
+	        $response["success"] = 0;
+	        $response["error"] = "No hazards in range";
+	        echo json_encode($response);
+    	}
     }
     else {
-	$response["success"] = 0;
-	$response["error"] = "No hazards in database";
-	echo json_encode($response);
+	    $response["success"] = 0;
+	    $response["error"] = "No hazards in database";
+	    echo json_encode($response);
+    }
+}
+elseif (isset($_GET["all"]) {
+    $allQuery = "SELECT * FROM hazards";
+    $results = mysql_query($allQuery);
+    
+    if (!empty($results)) {
+        if(mysql_num_rows($results) > 0) {
+            $response["hazard" = array();
+            while ($row = mysql_fetch_array($results)) {
+                $hazard = array();
+                $hazard["id"] = $row["id"];
+                $hazard["type"] = $row["type"];
+                $hazard["latitude"] = $row["latitude"];
+                $hazard["longitude"] = $row["longitude"];
+                $hazard["direction"] = $row["direction"];
+                $hazard["message"] = $row["message"];
+                array_push($reponse["hazard"], $hazard);
+            }
+            $response["success"] = 1;
+            echo json_encode($response);
+        }
+        else {
+            $response["success"] = 0;
+            $response["error"] = "No hazards in database";
+            echo json_encode($reponse);
+        }
+    }
+    else {
+        $response["success"] = 0;
+        $response["error"] = "No hazards in database";
+        echo json_encode($reponse);
     }
 }
 else {
