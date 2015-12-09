@@ -92,7 +92,7 @@ public class GooglePlayServicesActivity extends Activity implements
     public static final long GEOFENCE_EXPIRATION_IN_HOURS = 12;
     public static final long GEOFENCE_EXPIRATION_IN_MILLISECONDS =
             GEOFENCE_EXPIRATION_IN_HOURS * 60 * 60 * 1000; // 12 hours
-    public static final float GEOFENCE_RADIUS_IN_METERS = 25;
+    public static final float GEOFENCE_RADIUS_IN_METERS = 50;
 
     public ArrayList<HashMap<String, LatLng>> hazardList = new ArrayList<>();
     
@@ -108,7 +108,7 @@ public class GooglePlayServicesActivity extends Activity implements
         mLocationRequest = LocationRequest.create()
                 .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
                 .setInterval(5 * 1000)
-                .setFastestInterval(1 * 1000);
+                .setFastestInterval(2 * 1000);
         super.onCreate(savedInstanceState);
 
         mGeofenceList = new ArrayList<Geofence>();
@@ -319,11 +319,11 @@ public class GooglePlayServicesActivity extends Activity implements
             String result = null;
             HttpURLConnection con = null;
             //Log.v(TAG, "XXX");
-
+            URL url;
             try {
                /* xyzzy - change lat long to use user location */
                 if (lastKnownLocation == null) {
-                    URL url = new URL("http://api.tdkim.com/hazards.php?all");
+                    url = new URL("http://api.tdkim.com/hazards.php?all");
                 }
                 else {
                     Double tmpLat = lastKnownLocation.latitude;
@@ -334,7 +334,7 @@ public class GooglePlayServicesActivity extends Activity implements
                     tmpUrl.append(tmpLat);
                     tmpUrl.append("&longitude=");
                     tmpUrl.append(tmpLon);
-                    URL url = new URL(tmpUrl);
+                    url = new URL(tmpUrl.toString());
                 }
                 //URL url = new URL("http://api.tdkim.com/hazards.php?latitude=49&longitude=-122"); // bellingham
                 //URL url = new URL("http://api.tdkim.com/hazards.php?latitude=47&longitude=-122"); // seattle
